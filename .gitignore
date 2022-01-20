@@ -10,3 +10,5 @@ max.json
 runs
 best_runs
 artifacts
+.idea/*
+venv/*

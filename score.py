@@ -1,5 +1,6 @@
 from dataparser import *
 from collections import *
+import numpy as np
 
 # inp: the input file as a single string
 # out: the answer file produced by your solver, as a single string
@@ -8,7 +9,8 @@ def score(inp, out):
     ns = parse(inp)
     itr = (line for line in out.split('\n'))
     # TODO: implement
-
-    return 0
+    pizzaChain = marina.outstring_to_pizza_chain(itr, ns.NIng, ns.ingrList)
+    score = marina.calc_score(ns.clients, pizzaChain)
+    return score
 
 

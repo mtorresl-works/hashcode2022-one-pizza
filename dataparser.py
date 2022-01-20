@@ -3,6 +3,8 @@ import json
 from collections import *
 from pathlib import Path
 
+from custom import marina
+
 def ni(itr):
     return int(next(itr))
 
@@ -15,6 +17,10 @@ def parse(inp):
     itr = (line for line in inp.split('\n'))
     ns = argparse.Namespace()
     # TODO: fill ns
+    ns.C, ns.clients = marina.read_file(inp)
+    ns.ingrList = marina.gen_ingr(ns.clients)
+    ns.NIng = len(ns.ingrList)
+    marina.update_indexes(ns.clients, ns.ingrList)
 
     return ns
 
