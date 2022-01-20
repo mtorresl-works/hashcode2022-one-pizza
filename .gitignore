@@ -1,0 +1,12 @@
+__pycache__
+ans/
+.mypy_cache
+*.pyc
+*.max
+*.swp
+submission/
+main.cfg
+max.json
+runs
+best_runs
+artifacts
