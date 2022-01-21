@@ -97,7 +97,6 @@ def read_single_line_input(filestring):
 def pizza_chain_to_outstring(pizzaChain, NIng, ingrList):
     """
     Parses the binary array to the output file content.
-    (WARNING: NOT TESTED)
     :param pizzaChain:  a binary array (0s and 1s) indicating the presence or absence of an ingredient in the solution
     :param NIng: the number of ingredients
     :param ingrList: a list of strings with all the ingredients.
@@ -183,120 +182,63 @@ def calc_score(clients, pizzaChain):
 
 
 """
-====== SOLVING ALGORITHM: ASEXUAL GENETIC ALGORITHM ======
-"""
-
-
-def gen_pop_init(N0, NIng):
-    return np.random.randint(2, size=(N0, NIng))
-
-
-# function for implementing the single-point crossover
-def crossover(l, q):
-    a, b = l.copy(), q.copy()
-    # generating the random number to perform crossover
-    k = np.random.randint(NIng)
-    # interchanging the genes
-    a[k:], b[k:] = q[k:].copy(), l[k:].copy()
-    return a,b
-
-
-def mutate(popSurvivals, scores, mu):
-    # weights = scores/np.sum(scores)
-    # #Choosing the parents
-    # random_parents = np.random.choice(range(N1), N1*N2, p=weights)
-    #
-    # #Crossover
-    # children = np.zeros((N1*N2, NIng))
-    # for i in range(N1*N2-1):
-    #     children[i], children[i+1] = crossover(popSurvivals[random_parents[i]], popSurvivals[random_parents[i+1]])
-    children = np.tile(popSurvivals, (N2,1))
-
-    #Mutate the children
-    mutations = np.zeros((N1*N2, NIng))
-    ones = np.ones((N1*N2, mu))
-    random_ingr = np.random.choice(NIng, (N1*N2, mu))
-    list(map(lambda mut, i: np.put(mut, random_ingr[i], ones), mutations, range(N1*N2)))
-    return np.concatenate((popSurvivals, np.logical_xor(children,mutations)), axis=0)
-
-
-def filter_by_score(n1, scoresN1, population, clients):
-    """population is an np.array (dtype=object) of pizzaChains of size N1 + N1*N2.
-    N1 is the size of the surviving population.
-    The first N1 elements in population are the parents whose score is known (scoresN1)"""
-    scores = scoresN1
-    for pizzaChain in population[n1:]:
-        s = calc_score(clients, pizzaChain)
-        scores.append(s)
-
-    scores = np.array(scores)  # To be able to use arg sort
-    idSorted = np.argsort(-scores)  # sort idx in ascending ording
-    populationSorted = population[idSorted]
-    scoresSorted = scores[idSorted]
-
-    return populationSorted[:n1], list(scoresSorted[:n1])
-
-
-"""
 ====== EXAMPLE ======
-You can try out this example by running marina.py to quickly check the functions above, although it is preferable 
-not to run this script directly but rather main.py . The resulting output files are stored in *in/*
-(NOTE: main.py is not working for the moment.)
+This example is not executable anymore...
 """
 
-# These are the parameters you can play with
-fId = 3
-NRepeats = 50
-N1 = 4  # total of survivals
-N2 = 2  # number of descendants per survival
-N0 = N1*N2+N1  # total population
-initialMutRatio = 0.2
-decay = 200
-
-# Here starts the example
-filenames = ["./in/a_an_example.in", \
-             "./in/b_basic.in", \
-             "./in/c_coarse.in", \
-             "./in/d_difficult.in", \
-             "./in/e_elaborate.in"] # Max score for d = 1794 clients in 5h34min (upper limit = 1900 clients)
-
-time_init = time()
-C, clients = read_file(filenames[fId])
-ingrList = gen_ingr(clients)
-NIng = len(ingrList)
-update_indexes(clients, ingrList)
-
-# Initial population
-population = gen_pop_init(N1, NIng)
-scoresN1 = []
-for pizzaChain in population:
-    s = calc_score(clients, pizzaChain)
-    scoresN1.append(s)
-scoresN1 = np.array(scoresN1)  # To be able to use arg sort
-idSorted = np.argsort(-scoresN1)  # sort idx in ascending ording
-populationSorted = population[idSorted]
-scoresN1 = scoresN1[idSorted].tolist()
-
-counter = 0
-generation = 0
-while True:
-    print("---Generetion:" + str(generation))
-    mu = ceil(NIng*initialMutRatio*exp(-generation/decay))
-    populationAugmented = mutate(population, scoresN1, mu)
-    population, scores = filter_by_score(N1, scoresN1, populationAugmented, clients)
-
-    print("Max score:" + str(scores[0]))
-    if scoresN1[0] == scores[0]:
-        counter += 1
-    else:
-        counter = 0
-
-    if counter == NRepeats:
-        break
-
-    scoresN1 = scores
-    generation += 1
-    print("Execution time:" + str(time() - time_init))
-
-print("Final score:" + str(scores[0] / C))
-print_file(filenames[fId][:-2] + "out", ingrList, population[0])
+# # These are the parameters you can play with
+# fId = 3
+# NRepeats = 50
+# N1 = 4  # total of survivals
+# N2 = 2  # number of descendants per survival
+# N0 = N1*N2+N1  # total population
+# initialMutRatio = 0.2
+# decay = 200
+#
+# # Here starts the example
+# filenames = ["../in/a_an_example.in", \
+#              "../in/b_basic.in", \
+#              "../in/c_coarse.in", \
+#              "../in/d_difficult.in", \
+#              "../in/e_elaborate.in"] # Max score for d = 1794 clients in 5h34min (upper limit = 1900 clients)
+#
+# time_init = time()
+# C, clients = read_file(filenames[fId])
+# ingrList = gen_ingr(clients)
+# NIng = len(ingrList)
+# update_indexes(clients, ingrList)
+#
+# # Initial population
+# population = gen_pop_init(N1, NIng)
+# scoresN1 = []
+# for pizzaChain in population:
+#     s = calc_score(clients, pizzaChain)
+#     scoresN1.append(s)
+# scoresN1 = np.array(scoresN1)  # To be able to use arg sort
+# idSorted = np.argsort(-scoresN1)  # sort idx in ascending ording
+# populationSorted = population[idSorted]
+# scoresN1 = scoresN1[idSorted].tolist()
+#
+# counter = 0
+# generation = 0
+# while True:
+#     print("---Generetion:" + str(generation))
+#     mu = ceil(NIng*initialMutRatio*exp(-generation/decay))
+#     populationAugmented = mutate(population, scoresN1, mu)
+#     population, scores = filter_by_score(N1, scoresN1, populationAugmented, clients)
+#
+#     print("Max score:" + str(scores[0]))
+#     if scoresN1[0] == scores[0]:
+#         counter += 1
+#     else:
+#         counter = 0
+#
+#     if counter == NRepeats:
+#         break
+#
+#     scoresN1 = scores
+#     generation += 1
+#     print("Execution time:" + str(time() - time_init))
+#
+# print("Final score:" + str(scores[0] / C))
+# print_file(filenames[fId][:-2] + "out", ingrList, population[0])

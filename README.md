@@ -24,7 +24,7 @@ Run a testinstance on the format `in/$testcase.in` with your own solver by:
 ## Other functionality:
 - `sum_score.py` - looks in `max.json` and prints a table with a row for each input file: `{testcase} {max_score} {solve_module used} {run_folder_w_high_score}`
 - `show.py` - easy access to the input files to do visualizations of them.
-- `analyze.py` - easy access to the run folders and best run folder to analyze the output-file.
+- `analyzer.py` - easy access to the run folders and best run folder to analyze the output-file.
 - Bug in your scorer? Just remove `max.json` and rerun, now main.py will happliy overwrite the ans-files in the `submission` folder. If you accidentaly remove `max.json` you can recover your ans files form the `best_runs` folder or the `ans` folder.
 - `package.sh` create a zip folder with your solution
 - `setup.sh` removes `in/example_pizza.in` and creates a main.cfg.
@@ -36,7 +36,7 @@ We start by implementing a solver and a scorer in parallel. Usually we try to ma
 
 A good idea is also to create an _improver_ that you can apply after any solver. However it depends on the problem if there exists a reasonable improver. For the pizza problem there exists an improver that expands all the small pizza pieces, which usually gives quite a few extra points, depending on your solution.
 
-Another good idea is to analyze your inputs and outputs. `show.py` and `analyze.py` helps out with file-io. If you wish to use `matplotlib`, remember that it's easier used under `python3` than `pypy3`.
+Another good idea is to analyze your inputs and outputs. `show.py` and `analyzer.py` helps out with file-io. If you wish to use `matplotlib`, remember that it's easier used under `python3` than `pypy3`.
 
 ## Nice to have for the competition:
 - `pypy3` faster execution, because of JiT compilation to C

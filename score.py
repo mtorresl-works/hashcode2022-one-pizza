@@ -9,7 +9,7 @@ def score(inp, out):
     ns = parse(inp)
     itr = (line for line in out.split('\n'))
     # TODO: implement
-    pizzaChain = marina.outstring_to_pizza_chain(itr, ns.NIng, ns.ingrList)
+    pizzaChain = marina.outstring_to_pizza_chain(list(itr)[0], ns.NIng, ns.ingrList)
     score = marina.calc_score(ns.clients, pizzaChain)
     return score
 

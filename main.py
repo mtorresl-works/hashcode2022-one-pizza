@@ -74,7 +74,7 @@ def setup_stdstreams(run_folder):
 def run_testcase(testcase, args):
     testcase = path(testcase).name
     config = ConfigParser()
-    config.read(['default.cfg', 'main.cfg', args.config])
+    config.read(['main.cfg', args.config])
 
     update_config(config, 'score', args.score)
     update_config(config, 'solve', args.solve)

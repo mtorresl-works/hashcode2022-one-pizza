@@ -6,6 +6,11 @@ from collections import *
 from dataparser import parse
 from util import get_in_file_content
 
+"""
+Use this script as a template for creating a new solver.
+"""
+
+
 # inp is an input file as a single string
 # return your output as a string
 def solve(inp, args):
