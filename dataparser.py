@@ -17,7 +17,7 @@ def parse(inp):
     itr = (line for line in inp.split('\n'))
     ns = argparse.Namespace()
     # TODO: fill ns
-    ns.C, ns.clients = marina.read_file(inp)
+    ns.C, ns.clients = marina.read_single_line_input(inp)
     ns.ingrList = marina.gen_ingr(ns.clients)
     ns.NIng = len(ns.ingrList)
     marina.update_indexes(ns.clients, ns.ingrList)
