@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "main.py", line 125, in <module>
+    run_testcase(args.testcase, args)
+  File "main.py", line 115, in run_testcase
+    run(sa)
+  File "main.py", line 105, in run
+    ans = get_ans(solve_args)
+  File "/home/matulni/Documents/coding_various/google_hash_2022/hashcode2022-one-pizza/util.py", line 146, in get_ans
+    ans = sol_fn(inp, solve_args)
+  File "/home/matulni/Documents/coding_various/google_hash_2022/hashcode2022-one-pizza/solvers/sa.py", line 59, in solve
+    beta = abs(100/C)
+NameError: name 'C' is not defined

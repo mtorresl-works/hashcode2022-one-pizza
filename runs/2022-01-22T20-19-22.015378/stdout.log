@@ -1,0 +1,15 @@
+# of clients:  3
+# of ingredients:  6
+1
+BEST HIT
+beta = 33.333, nFlips = 3, accept = 0.12, best : 2 (0.667)
+beta = 33.353, nFlips = 3, accept = 0.08, best : 2 (0.667)
+beta = 33.373, nFlips = 3, accept = 0.04, best : 2 (0.667)
+beta = 33.393, nFlips = 3, accept = 0.06, best : 2 (0.667)
+beta = 33.413, nFlips = 3, accept = 0.04, best : 2 (0.667)
+beta = 33.433, nFlips = 3, accept = 0.07, best : 2 (0.667)
+beta = 33.453, nFlips = 3, accept = 0.11, best : 2 (0.667)
+beta = 33.473, nFlips = 3, accept = 0.00, best : 2 (0.667)
+beta = 33.493, nFlips = 3, accept = 0.03, best : 2 (0.667)
+beta = 33.513, nFlips = 3, accept = 0.05, best : 2 (0.667)
+Execution time:  0.06058692932128906
