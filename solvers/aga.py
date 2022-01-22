@@ -19,8 +19,8 @@ from custom import marina
 
 # These are the parameters you can play with
 NRepeats = 50
-N1 = 1  # total of survivals
-N2 = 1  # number of descendants per survival
+N1 = 3  # total of survivals
+N2 = 2  # number of descendants per survival
 initialMutRatio = 0.2
 decay = 10
 

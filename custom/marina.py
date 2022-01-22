@@ -192,13 +192,14 @@ To find optimal initial conditions
 def check_compatibility(two_clients, edgeList):
     index0 = two_clients[0].id
     index1 = two_clients[1].id
-    if not (index0 % 100) and index1 == index0 + 1:
-        print("Checking clients "+str(index0)+" and "+str(index1))
+    # if not (index0 % 100) and index1 == index0 + 1:
+    #     print("Checking clients "+str(index0)+" and "+str(index1))
     if two_clients[0].l_ingr.intersection(two_clients[1].d_ingr) or two_clients[1].l_ingr.intersection(
             two_clients[0].d_ingr):
         edgeList.append((index0, index1))
 
 def create_graph(clients):
+    print("Creating client network...")
     g = igraph.Graph()
     g.add_vertices(len(clients))
     g.vs["client_info"] = clients
@@ -206,9 +207,11 @@ def create_graph(clients):
     for two_clients in combinations(clients, 2):
         check_compatibility(two_clients, edgeList)
     g.add_edges(edgeList)
+    print("Done! Vertex = "+str(g.vcount())+" Edges = "+str(g.ecount()))
     return g
 
 def largest_clients_group(g):
+    print("Calculating the largest independent set of clients...")
     indSet = []
     # independentSet = igraph.GraphBase.largest_independent_vertex_sets(g)[0]
     while g.vcount():
@@ -217,19 +220,13 @@ def largest_clients_group(g):
         while not len(vSequence):
             degree = degree + 1
             vSequence = g.vs.select(_degree=degree)
-        print("degree = " + str(degree))
-        for v in vSequence:
-            try:
-                indSet.append(v['client_info'])
-                nSequence = g.neighbors(v, mode='all')
-                g.delete_vertices([v])
-                for n in nSequence:
-                    try:
-                        g.delete_vertices([n])
-                    except:
-                        pass
-            except:
-                pass
+        # print("degree = " + str(degree))
+        v = vSequence[0]
+        indSet.append(v['client_info'])
+        nSequence = g.neighbors(v, mode='all')
+        g.delete_vertices(nSequence)
+        g.delete_vertices([v])
+    print("Done! Initial score = "+str(len(indSet)))
     return indSet
 
 def optimal_pizza_chain(indClients, NIng):
