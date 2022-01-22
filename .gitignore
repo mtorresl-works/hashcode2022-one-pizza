@@ -8,3 +8,7 @@ best_runs
 artifacts
 .idea/*
 venv/*
+submission/
+main.cfg
+max.json
+runs

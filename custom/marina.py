@@ -1,7 +1,7 @@
-from math import *
 import numpy as np
-from time import time
-
+import igraph
+from itertools import combinations
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 """
 ====== OBJECT DEFINITION ======
@@ -11,6 +11,7 @@ from time import time
 class Client:
     def __init__(self, likes, dislikes):
         """likes and dislikes are lists of strings read from file"""
+        self.id = 0
         self.L = int(likes[0])  # number of ingredients client likes
         self.D = int(dislikes[0])  # number of ingredients client dislikes
         self.l_ingr_s = likes[1:] # likes as a list of strings
@@ -19,12 +20,15 @@ class Client:
         self.d_ingr = {} # dislikes as a set of indexes
 
     #
-    def set_indexes(self, ingrList):
+    def set_indexes(self, clients, ingrList):
         """
         Given a list of ingredients, sets the clients' preferences as two sets of indexes to access ingrList.
+        Also sets the client index inside the list of clietns
+        :param clients: the list containing all the clients
         :param ingrList: a list of strings
         :return: void
         """
+        self.id = clients.index(self)
         self.l_ingr = {ingrList.index(item) for item in self.l_ingr_s}
         self.d_ingr = {ingrList.index(item) for item in self.d_ingr_s}
 
@@ -69,7 +73,7 @@ def update_indexes(clients, ingrList):
     :return: void
     """
     for client in clients:
-        client.set_indexes(ingrList)
+        client.set_indexes(clients,ingrList)
 
 
 """
@@ -179,6 +183,66 @@ def calc_score(clients, pizzaChain):
         if client.is_coming(pizzaChain):
             score = score + 1
     return score
+
+
+"""
+====== MAXIMUM INDEPENDENT SET ======
+To find optimal initial conditions
+"""
+def check_compatibility(two_clients, edgeList):
+    index0 = two_clients[0].id
+    index1 = two_clients[1].id
+    if not (index0 % 100) and index1 == index0 + 1:
+        print("Checking clients "+str(index0)+" and "+str(index1))
+    if two_clients[0].l_ingr.intersection(two_clients[1].d_ingr) or two_clients[1].l_ingr.intersection(
+            two_clients[0].d_ingr):
+        edgeList.append((index0, index1))
+
+def create_graph(clients):
+    g = igraph.Graph()
+    g.add_vertices(len(clients))
+    g.vs["client_info"] = clients
+    edgeList = []
+    for two_clients in combinations(clients, 2):
+        check_compatibility(two_clients, edgeList)
+    g.add_edges(edgeList)
+    return g
+
+def largest_clients_group(g):
+    indSet = []
+    # independentSet = igraph.GraphBase.largest_independent_vertex_sets(g)[0]
+    while g.vcount():
+        degree = 0
+        vSequence = g.vs.select(_degree=degree)
+        while not len(vSequence):
+            degree = degree + 1
+            vSequence = g.vs.select(_degree=degree)
+        print("degree = " + str(degree))
+        for v in vSequence:
+            try:
+                indSet.append(v['client_info'])
+                nSequence = g.neighbors(v, mode='all')
+                g.delete_vertices([v])
+                for n in nSequence:
+                    try:
+                        g.delete_vertices([n])
+                    except:
+                        pass
+            except:
+                pass
+    return indSet
+
+def optimal_pizza_chain(indClients, NIng):
+    commonLikesIndex = [client.l_ingr for client in indClients]
+    activeIngr = list(set().union(*commonLikesIndex))
+    pizzaChain = np.zeros(NIng)
+    pizzaChain[activeIngr] = 1
+    return pizzaChain
+
+def starting_config_routine(clients, NIng):
+    graph = create_graph(clients)
+    indSet = largest_clients_group(graph)
+    return optimal_pizza_chain(indSet, NIng)
 
 
 """

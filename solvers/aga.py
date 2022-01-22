@@ -22,11 +22,14 @@ NRepeats = 50
 N1 = 1  # total of survivals
 N2 = 1  # number of descendants per survival
 initialMutRatio = 0.2
-decay = 200
+decay = 10
 
 
-def gen_pop_init(NIng):
-    return np.random.randint(2, size=(N1, NIng))
+def gen_pop_init(NIng, initial_conditions=[]):
+    if not initial_conditions.size == 0:
+        return np.vstack((initial_conditions for i in range(N1)))
+    else:
+        return np.random.randint(2, size=(N1, NIng))
 
 
 # function for implementing the single-point crossover
@@ -81,9 +84,10 @@ def solve(inp, args):
     time_init = time()
     random.seed(args['seed'])
     ns = parse(inp)
+    pizzaChain = marina.starting_config_routine(ns.clients, ns.NIng)
 
     # Initial population
-    population = gen_pop_init(ns.NIng)
+    population = gen_pop_init(ns.NIng, initial_conditions = pizzaChain)
     scoresN1 = []
     for pizzaChain in population:
         s = marina.calc_score(ns.clients, pizzaChain)
