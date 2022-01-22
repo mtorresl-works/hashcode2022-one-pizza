@@ -102,7 +102,7 @@ def pizza_chain_to_outstring(pizzaChain, NIng, ingrList):
     :param ingrList: a list of strings with all the ingredients.
     :return: the output file content in one line
     """
-    otr = str(NIng)
+    otr = str(sum(pizzaChain))
     for idx, spin in enumerate(pizzaChain):  # idx position in chain, spin True or False
         if spin: otr = otr + ' ' + ingrList[idx]
     return otr + "\n"
