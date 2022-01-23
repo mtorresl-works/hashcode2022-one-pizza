@@ -83,7 +83,7 @@ if __name__ == '__main__':
     print('Best score so far: ', scoreBest)
 
     if flags.iC == 'random':
-        pizzaChain = []
+        pizzaChain = np.array([])
     population = gen_pop_init(ns.NIng, initial_conditions=pizzaChain)
 
     scoresN1 = []
@@ -97,8 +97,8 @@ if __name__ == '__main__':
 
     counter = 0
     generation = 0
+    start_time = time.time()
     while True:
-        start_time = time.time()
         print("---Generation:" + str(generation))
         mu = ceil(ns.NIng * initialMutRatio * exp(-generation / decay))
         populationAugmented = mutate(population, scoresN1, mu, ns.NIng, flags.N1, flags.N2)
