@@ -22,7 +22,7 @@ decay = 10
 
 def gen_pop_init(NIng, initial_conditions=[]):
     if not initial_conditions.size == 0:
-        return np.vstack((initial_conditions for i in range(flags.N1)))
+        return np.vstack(initial_conditions for i in range(flags.N1))
     else:
         return np.random.randint(2, size=(flags.N1, NIng))
 
@@ -86,6 +86,8 @@ if __name__ == '__main__':
 
     print('Best score so far: ', scoreBest)
 
+    if flags.iC = 'random':
+        pizzaChain = []
     population = gen_pop_init(ns.NIng, initial_conditions=pizzaChain)
 
     scoresN1 = []

@@ -290,7 +290,7 @@ def gen_pizza_chain(fId, iC, NIng, clients):
             try:
                 score, pizzaChain = read_greedy(fId)
             except:
-                prin("Warning: executing graph routine...")
+                print("Warning: executing graph routine...")
                 score, pizzaChain = greedy_graph_routine(clients, NIng)
                 save_greedy(fId, score, pizzaChain)
 
@@ -347,7 +347,7 @@ def largest_clients_group(g):
         nSequence = g.neighbors(v, mode='all')
         g.delete_vertices(nSequence)
         g.delete_vertices([v])
-    print("Done! Initial score = "+str(len(indSet)))
+    print("Done! Initial number of clients = "+str(len(indSet)))
     return indSet
 
 def optimal_pizza_chain(indClients, NIng):
@@ -360,4 +360,5 @@ def optimal_pizza_chain(indClients, NIng):
 def greedy_graph_routine(clients, NIng):
     graph = create_graph(clients)
     indSet = largest_clients_group(graph)
-    return len(indSet), optimal_pizza_chain(indSet, NIng)
+    pizzaChain = optimal_pizza_chain(indSet, NIng)
+    return calc_score(clients, pizzaChain), pizzaChain
