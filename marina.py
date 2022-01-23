@@ -169,6 +169,16 @@ def save_best(fId, score, pizzaChain):
         np.savez(filename, score=np.array(score), pizzaChain=pizzaChain)
 
 
+def save_greedy(fId, score, pizzaChain):
+        """
+        Saves pizza chain
+        :fId: string indicating the file
+        :score: integer storing best score
+        """
+        filename = 'greedy_pizzas/'+fId+'-greedy_pizzaChain.npz'
+        np.savez(filename, score=np.array(score), pizzaChain=pizzaChain)
+
+
 def print_best_score(fId):
         """
         Prints best score ever
@@ -276,7 +286,7 @@ def optimal_pizza_chain(indClients, NIng):
     pizzaChain[activeIngr] = 1
     return pizzaChain
 
-def starting_config_routine(clients, NIng):
+def greedy_graph_routine(clients, NIng):
     graph = create_graph(clients)
     indSet = largest_clients_group(graph)
-    return optimal_pizza_chain(indSet, NIng)
+    return len(indSet), optimal_pizza_chain(indSet, NIng)

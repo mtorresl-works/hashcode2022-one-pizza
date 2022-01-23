@@ -104,9 +104,24 @@ if __name__ == '__main__':
         scoreBest, pizzaChainBest = marina.read_best(flags.fId)
         pizzaChain = copy(pizzaChainBest)
 
+    elif flags.iC == 'greedy':
+        try:
+            score, pizzaChainGreedy = marina.read_greedy(flags.fId)
+        except:
+            score, pizzaChainGreedy = marina.greedy_graph_routine(ns.clients, ns.NIng)
+            marina.save_greedy(flags.fId, score, pizzaChainGreedy)
+
+        pizzaChain = copy(pizzaChainGreedy)
+
+        scoreBest, pizzaChainBest = marina.read_best(flags.fId)
+
+        if score > scoreBest:
+            scoreBest, pizzaChainBest = score, copy(pizzaChain)
+            marina.save_best(flags.fId, scoreBest, pizzaChainBest)
+
     print('Best score so far: ', scoreBest)
 
-    population = gen_pop_init(ns.NIng, initial_conditions = pizzaChain)
+    population = gen_pop_init(ns.NIng, initial_conditions=pizzaChain)
 
     scoresN1 = []
     for pizzaChain in population:
