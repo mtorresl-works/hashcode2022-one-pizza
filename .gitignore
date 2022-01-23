@@ -4,7 +4,6 @@ ans/
 *.pyc
 *.max
 *.swp
-best_runs
 artifacts
 .idea/*
 venv/*
