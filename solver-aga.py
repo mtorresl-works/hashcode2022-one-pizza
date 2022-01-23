@@ -1,7 +1,3 @@
-import argparse
-import random
-import sys
-from collections import *
 import numpy as np
 from math import exp, ceil
 import time
@@ -15,7 +11,7 @@ from copy import copy
 # TODO: clean up and add documentation
 
 # These are the parameters you can play with
-NRepeats = 50
+# NRepeats = 50
 initialMutRatio = 0.2
 decay = 10
 
@@ -86,7 +82,7 @@ if __name__ == '__main__':
 
     print('Best score so far: ', scoreBest)
 
-    if flags.iC = 'random':
+    if flags.iC == 'random':
         pizzaChain = []
     population = gen_pop_init(ns.NIng, initial_conditions=pizzaChain)
 
@@ -122,8 +118,8 @@ if __name__ == '__main__':
         else:
             counter = 0
 
-        if counter == NRepeats:
-            break
+        # if counter == NRepeats:
+        #     break
 
         scoresN1 = scores
         generation += 1

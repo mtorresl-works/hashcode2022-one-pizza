@@ -1,9 +1,9 @@
 import numpy as np
 import igraph
 from itertools import combinations
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import argparse
 from copy import copy
+from time import time
 """
 ====== OBJECT DEFINITION ======
 """
@@ -17,8 +17,8 @@ class Client:
         self.D = int(dislikes[0])  # number of ingredients client dislikes
         self.l_ingr_s = likes[1:] # likes as a list of strings
         self.d_ingr_s = dislikes[1:] # dislikes as a list of strings
-        self.l_ingr = {} # likes as a set of indexes
-        self.d_ingr = {} # dislikes as a set of indexes
+        self.l_ingr = [] # likes as a list of indexes
+        self.d_ingr = [] # dislikes as a list of indexes
 
     #
     def set_indexes(self, clients, ingrList):
@@ -30,8 +30,8 @@ class Client:
         :return: void
         """
         self.id = clients.index(self)
-        self.l_ingr = {ingrList.index(item) for item in self.l_ingr_s}
-        self.d_ingr = {ingrList.index(item) for item in self.d_ingr_s}
+        self.l_ingr = [ingrList.index(item) for item in self.l_ingr_s]
+        self.d_ingr = [ingrList.index(item) for item in self.d_ingr_s]
 
     def is_coming(self, pizzaChain):
         """
@@ -39,8 +39,9 @@ class Client:
         :param pizzaChain: a binary array (0s and 1s) indicating the presence or absence of an ingredient in the solution
         :return: a boolean
         """
-        ingrSet = set(np.argwhere(pizzaChain == 1).flatten())
-        if not self.l_ingr.issubset(ingrSet) or self.d_ingr.intersection(ingrSet):
+        likesPresence = pizzaChain[self.l_ingr]
+        dislikesPresence = pizzaChain[self.d_ingr]
+        if 0 in likesPresence or 1 in dislikesPresence:
             return False
         else:
             return True
@@ -232,10 +233,12 @@ def calc_score(clients, pizzaChain):
     :param pizzaChain: a binary array (0s and 1s) indicating the presence or absence of an ingredient in the solution
     :return:
     """
+    #start = time()
     score = 0
     for client in clients:
         if client.is_coming(pizzaChain):
             score = score + 1
+    #print("Scorer time = "+str(time()-start))
     return score
 
 """
