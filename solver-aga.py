@@ -1,15 +1,12 @@
 import argparse
 import random
 import sys
-sys.path.extend(['..', '.'])
 from collections import *
-from dataparser import parse
-from util import get_in_file_content
 import numpy as np
 from math import exp, ceil
-from time import time
-
-from custom import marina
+import time
+import marina
+from copy import copy
 
 
 """
@@ -77,17 +74,40 @@ def filter_by_score(scoresN1, population, clients):
 
     return populationSorted[:N1], list(scoresSorted[:N1])
 
+def read_flags(fId, iC):
 
-# inp is an input file as a single string
-# return your output as a string
-def solve(inp, args):
-    time_init = time()
-    random.seed(args['seed'])
-    ns = parse(inp)
-    pizzaChain = marina.starting_config_routine(ns.clients, ns.NIng)
+        parser = argparse.ArgumentParser()
 
-    # Initial population
+        parser.add_argument('-fId', help="Input file identifier (str). Default = "+fId, type=str, default=fId)
+        parser.add_argument('-iC', help="Initial configuration (str). 'random' or 'best'. Default = "+iC, type=str, default=iC)
+
+        return parser.parse_args()
+
+if __name__ == '__main__':
+
+    flags = read_flags(fId='a', iC='random')
+
+    inp = marina.get_in_file_content(marina.inputFiles[flags.fId])
+    ns = marina.parse(inp)
+
+    if flags.iC == 'random':
+        pizzaChain = marina.gen_pizza_chain_random(ns.NIng)#random
+        score = marina.calc_score(ns.clients, pizzaChain)
+
+        scoreBest, pizzaChainBest = marina.read_best(flags.fId)
+
+        if score > scoreBest:
+            scoreBest, pizzaChainBest = score, copy(pizzaChain)
+            marina.save_best(flags.fId, scoreBest, pizzaChainBest)
+
+    elif flags.iC == 'best':
+        scoreBest, pizzaChainBest = marina.read_best(flags.fId)
+        pizzaChain = copy(pizzaChainBest)
+
+    print('Best score so far: ', scoreBest)
+
     population = gen_pop_init(ns.NIng, initial_conditions = pizzaChain)
+
     scoresN1 = []
     for pizzaChain in population:
         s = marina.calc_score(ns.clients, pizzaChain)
@@ -100,12 +120,21 @@ def solve(inp, args):
     counter = 0
     generation = 0
     while True:
-        print("---Generetion:" + str(generation))
+        start_time = time.time()
+        print("---Generation:" + str(generation))
         mu = ceil(ns.NIng * initialMutRatio * exp(-generation / decay))
         populationAugmented = mutate(population, scoresN1, mu, ns.NIng)
         population, scores = filter_by_score(scoresN1, populationAugmented, ns.clients)
 
-        print("Max score:" + str(scores[0]))
+        if scores[0] > scoreBest:
+            print("Best hit")
+            scoreBest, pizzaChainBest = marina.read_best(flags.fId)
+            if scores[0] > scoreBest:
+                print("BEST HIT EVER: {:d}".format(scores[0]))
+                scoreBest, pizzaChainBest = scores[0], copy(population[0])
+                marina.save_best(flags.fId, scoreBest, pizzaChainBest)
+
+        print("Max score: {:d} ({:.3f})".format(scores[0], scores[0]/ns.C))
         if scoresN1[0] == scores[0]:
             counter += 1
         else:
@@ -116,16 +145,6 @@ def solve(inp, args):
 
         scoresN1 = scores
         generation += 1
-        print("Execution time:" + str(time() - time_init))
+        print("Execution time:" + str(time.time() - start_time))
 
     print("Final score:" + str(scores[0] / ns.C))
-
-    return marina.pizza_chain_to_outstring(population[0], ns.NIng, ns.ingrList)
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('in_file')
-    args = parser.parse_args()
-    inp = get_in_file_content(args.in_file)
-    out = solve(inp, {'seed': 0})
-    print('\n'.join(['OUT:', '=========', out]))

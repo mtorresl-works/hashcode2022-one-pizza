@@ -2,7 +2,7 @@ import numpy as np
 import igraph
 from itertools import combinations
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
+import argparse
 """
 ====== OBJECT DEFINITION ======
 """
@@ -62,7 +62,7 @@ def gen_ingr(clients):
         ingrList += c.l_ingr_s
         ingrList += c.d_ingr_s
 
-    return list(set(ingrList))
+    return list((dict.fromkeys((ingrList)))) #sets don't preserve order. Use dict instead!
 
 
 def update_indexes(clients, ingrList):
@@ -79,6 +79,37 @@ def update_indexes(clients, ingrList):
 """
 ====== FILE PROCESSING ======
 """
+
+inputFiles = {'a': "./input_data/a_an_example.in",\
+              'b': "./input_data/b_basic.in",\
+              'c': "./input_data/c_coarse.in",\
+              'd': "./input_data/d_difficult.in",\
+              'e': "./input_data/e_elaborate.in"}
+
+def get_in_file_content(filename):
+    """
+    Reads file contents and transforms it in a string
+    """
+    try:
+        with open(filename) as f:
+            return f.read()
+    except:
+        print("Error opening file "+filename)
+        return -1
+
+
+def parse(inp):
+    """
+    Generates namespace with relevant variables from string.
+    To be called from solver and submission_generator
+    """
+    ns = argparse.Namespace()
+    ns.C, ns.clients = read_single_line_input(inp)
+    ns.ingrList = gen_ingr(ns.clients)
+    ns.NIng = len(ns.ingrList)
+    update_indexes(ns.clients, ns.ingrList)
+
+    return ns
 
 
 def read_single_line_input(filestring):
@@ -112,46 +143,48 @@ def pizza_chain_to_outstring(pizzaChain, NIng, ingrList):
     return otr + "\n"
 
 
-def outstring_to_pizza_chain(itr, NIng, ingrList):
+def read_best(fId):
     """
-    To score the final solution, re-parses the output file content to the original binary array.
-    (WARNING: NOT TESTED)
-    :param itr: the output file content in one line
-    :param NIng: the number of ingredients
-    :param ingrList: a list of strings with all the ingredients.
-    :return: a binary array (0s and 1s) indicating the presence or absence of an ingredient in the solution
+    Returns best config ever
+    :fId: string indicating the file
+    returns score, pizzaChain
     """
-    stringPizzaChain = itr.split(" ")[1:]
-    pizzaChainIndex = [ingrList.index(item) for item in stringPizzaChain]
-    pizzaChain = np.zeros(NIng)
-    pizzaChain[pizzaChainIndex] = 1
-    return pizzaChain
+    filename = 'best_runs/'+fId+'-best_pizzaChain.npz'
+    try:
+        with np.load(filename) as data:
+            return int(data['score']), data['pizzaChain']
+    except:
+        print("Error: couldn't open "+filename)
+        print("Best score set to 0")
+        return 0, None
 
 
-def read_file(filenameIn):
-    """
-    Opens the input file and creates the list of clients.
-    (WARNING: not used in the final version of the code, only for the example in this script).
-    :param filenameIn: the path to the data file
-    :return: a tuple containing the number of clients and a preliminary list of clients only with l_ingr_s and d_ingr_s
-    """
-    with open(filenameIn, 'r') as f:
-        data = f.readlines()
-    f.close()
-
-    C = int(data[0])
-    clients = []
-    for cL, cD in zip(data[1::2], data[2::2]):
-        cL = cL.split(' ')  # split in an array of words
-        cL[-1] = cL[-1].strip('\n')  # remove '\n' from last word
-        cD = cD.split(' ')
-        cD[-1] = cD[-1].strip('\n')
-        clients.append(Client(cL, cD))
-
-    return C, clients
+def save_best(fId, score, pizzaChain):
+        """
+        Saves pizza chain
+        :fId: string indicating the file
+        :score: integer storing best score
+        """
+        filename = 'best_runs/'+fId+'-best_pizzaChain.npz'
+        np.savez(filename, score=np.array(score), pizzaChain=pizzaChain)
 
 
-def print_file(filenameOut, ingrList, pizzaChain):
+def print_best_score(fId):
+        """
+        Prints best score ever
+        :fId: string indicating the file
+        """
+        filename = 'best_runs/'+fId+'-best_pizzaChain.npz'
+        try:
+            with np.load(filename) as data:
+                print("Best score ever for file "+fId+": {:d}".format(int(data['score'])))
+
+        except:
+            print("Error: couldn't open "+filename)
+            print("Best score is 0")
+
+
+def print_submission_file(fId, ingrList, pizzaChain):
     """
     Converts the binary solution to the output string and prints it to a file.
     (WARNING: not used in the final version of the code, only for the example in this script).
@@ -160,8 +193,9 @@ def print_file(filenameOut, ingrList, pizzaChain):
     :param pizzaChain: a binary array (0s and 1s) indicating the presence or absence of an ingredient in the solution
     :return: void
     """
+    filename = './output_data/'+fId+'.out'
     N = sum(pizzaChain)
-    with open(filenameOut, 'w') as f:
+    with open(filename, 'w') as f:
         f.write(pizza_chain_to_outstring(pizzaChain, N, ingrList))
     f.close()
 
@@ -169,7 +203,6 @@ def print_file(filenameOut, ingrList, pizzaChain):
 """
 ====== SCORING ======
 """
-
 
 def calc_score(clients, pizzaChain):
     """
@@ -184,6 +217,13 @@ def calc_score(clients, pizzaChain):
             score = score + 1
     return score
 
+"""
+====== RANDOM INITIALIZERS======
+"""
+
+def gen_pizza_chain_random(NIng):
+    pizzaChain = np.random.choice([0,1], size = NIng)
+    return pizzaChain
 
 """
 ====== MAXIMUM INDEPENDENT SET ======
@@ -240,66 +280,3 @@ def starting_config_routine(clients, NIng):
     graph = create_graph(clients)
     indSet = largest_clients_group(graph)
     return optimal_pizza_chain(indSet, NIng)
-
-
-"""
-====== EXAMPLE ======
-This example is not executable anymore...
-"""
-
-# # These are the parameters you can play with
-# fId = 3
-# NRepeats = 50
-# N1 = 4  # total of survivals
-# N2 = 2  # number of descendants per survival
-# N0 = N1*N2+N1  # total population
-# initialMutRatio = 0.2
-# decay = 200
-#
-# # Here starts the example
-# filenames = ["../in/a_an_example.in", \
-#              "../in/b_basic.in", \
-#              "../in/c_coarse.in", \
-#              "../in/d_difficult.in", \
-#              "../in/e_elaborate.in"] # Max score for d = 1794 clients in 5h34min (upper limit = 1900 clients)
-#
-# time_init = time()
-# C, clients = read_file(filenames[fId])
-# ingrList = gen_ingr(clients)
-# NIng = len(ingrList)
-# update_indexes(clients, ingrList)
-#
-# # Initial population
-# population = gen_pop_init(N1, NIng)
-# scoresN1 = []
-# for pizzaChain in population:
-#     s = calc_score(clients, pizzaChain)
-#     scoresN1.append(s)
-# scoresN1 = np.array(scoresN1)  # To be able to use arg sort
-# idSorted = np.argsort(-scoresN1)  # sort idx in ascending ording
-# populationSorted = population[idSorted]
-# scoresN1 = scoresN1[idSorted].tolist()
-#
-# counter = 0
-# generation = 0
-# while True:
-#     print("---Generetion:" + str(generation))
-#     mu = ceil(NIng*initialMutRatio*exp(-generation/decay))
-#     populationAugmented = mutate(population, scoresN1, mu)
-#     population, scores = filter_by_score(N1, scoresN1, populationAugmented, clients)
-#
-#     print("Max score:" + str(scores[0]))
-#     if scoresN1[0] == scores[0]:
-#         counter += 1
-#     else:
-#         counter = 0
-#
-#     if counter == NRepeats:
-#         break
-#
-#     scoresN1 = scores
-#     generation += 1
-#     print("Execution time:" + str(time() - time_init))
-#
-# print("Final score:" + str(scores[0] / C))
-# print_file(filenames[fId][:-2] + "out", ingrList, population[0])
