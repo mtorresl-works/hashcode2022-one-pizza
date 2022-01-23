@@ -43,38 +43,15 @@ if __name__ == '__main__':
 
     p = 0.02 #maximum percentage of the chain to be change in a small change
 
-    if flags.iC == 'random':
-        pizzaChainOld = marina.gen_pizza_chain_random(ns.NIng)#random
-        scoreOld = marina.calc_score(ns.clients, pizzaChainOld)
-        enerOld = score_to_energy(scoreOld)
-
-        scoreBest, pizzaChainBest = marina.read_best(flags.fId)
-
-        if scoreOld > scoreBest: #If random is better than best, save random as best
-            scoreBest, enerBest, pizzaChainBest = scoreOld, enerOld, copy(pizzaChainOld)
-            marina.save_best(flags.fId, scoreBest, pizzaChainBest)
-
-    elif flags.iC == 'greedy':
-        scoreGreedy, pizzaChainGreedy = marina.read_greedy(flags.fId)
-        enerGreed = score_to_energy(scoreGreedy)
-        scoreBest, pizzaChainBest = marina.read_best(flags.fId)
-
-        if scoreGreedy > scoreBest: #If greedy is better than best, save greedy as best
-            scoreBest, pizzaChainBest = scoreGreedy, copy(pizzaChainOld)
-            marina.save_best(flags.fId, scoreBest, pizzaChainBest)
-
-        scoreOld, enerOld, pizzaChainOld = scoreGreedy, enerGreedy, copy(pizzaChainGreedy)
-
-    elif flags.iC == 'best':
-        scoreBest, pizzaChainBest = marina.read_best(flags.fId)
-        enerBest = score_to_energy(scoreBest)
-        scoreOld, enerOld, pizzaChainOld = scoreBest, enerBest, copy(pizzaChainBest)
+    score, scoreBest, pizzaChainOld = marina.gen_pizza_chain(flags.fId, flags.iC, ns.NIng, ns.clients)
+    enerOld = score_to_energy(score)
 
     print('Best score so far: ', scoreBest)
 
     for i in range(flags.nMCgbl):
         acc = 0.0
-        nFlips =5# round((nMC_global-i)/nMC_global * p*NIng)+1 #number of flips in a small change,decreases with i
+        nFlips = flags.nFlips
+        #round((nMC_global-i)/nMC_global * p*NIng)+1 #number of flips in a small change,decreases with i
         for j in range(flags.nMC):
             pizzaChainNew = small_change(pizzaChainOld, ns.NIng, nFlips)
             scoreNew = marina.calc_score(ns.clients, pizzaChainNew)
@@ -94,5 +71,5 @@ if __name__ == '__main__':
                 pizzaChainOld = copy(pizzaChainNew)
                 acc += 1
 
-        print("beta = {:.3f}, nFlips = {:d}, accept = {:.2f}, best : {:d} ({:.3f})".format(flags.beta, nFlips, acc/flags.nMC, scoreBest, scoreBest/ns.C))
+        print("beta = {:.3f}, nFlips = {:d}, accept = {:.2f}, curr: {:d}, best: {:d} ({:.3f})".format(flags.beta, nFlips, acc/flags.nMC, scoreNew, scoreBest, scoreBest/ns.C))
         flags.beta += flags.deltaBeta

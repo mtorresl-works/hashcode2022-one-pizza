@@ -3,6 +3,7 @@ import igraph
 from itertools import combinations
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import argparse
+from copy import copy
 """
 ====== OBJECT DEFINITION ======
 """
@@ -241,7 +242,7 @@ def calc_score(clients, pizzaChain):
 ====== INITIALIZERS======
 """
 
-def read_flags(fId='a', iC='random', nMC=100, nMCgbl=100, beta=0.01, deltaBeta=0.005):
+def read_flags(fId='a', iC='random', nMC=100, nMCgbl=100, beta=0.01, deltaBeta=0.005, nFlips=5, N1=5, N2=2):
 
         parser = argparse.ArgumentParser()
 
@@ -252,14 +253,54 @@ def read_flags(fId='a', iC='random', nMC=100, nMCgbl=100, beta=0.01, deltaBeta=0
 
         """ SA SOLVER """
 
-        parser.add_argument('-nMC', help="Minibatch # of iterations (int). Default = "+str(nMC), type=int, default=nMC)
-        parser.add_argument('-nMCgbl', help="Bigbatch # of iterations (int). Default = "+str(nMCgbl), type=int, default=nMCgbl)
-        parser.add_argument('-beta', help="Initial beta (float). Default = "+str(beta), type=float, default=beta)
-        parser.add_argument('-deltaBeta', help="Step in beta (float). Default = "+str(deltaBeta), type=float, default=deltaBeta)
+        parser.add_argument('-nMC', help="(SA) Minibatch # of iterations (int). Default = "+str(nMC), type=int, default=nMC)
+        parser.add_argument('-nMCgbl', help="(SA) Bigbatch # of iterations (int). Default = "+str(nMCgbl), type=int, default=nMCgbl)
+        parser.add_argument('-beta', help="(SA) Initial beta (float). Default = "+str(beta), type=float, default=beta)
+        parser.add_argument('-deltaBeta', help="(SA) Step in beta (float). Default = "+str(deltaBeta), type=float, default=deltaBeta)
+        parser.add_argument('-nFlips', help="(SA) Flips # in small change (int). Default = "+str(nFlips), type=int, default=nFlips)
+
+        """ AGA SOLVER """
+        parser.add_argument('-N1', help="(AGA) # of parents (int). Default = "+str(N1), type=int, default=N1)
+        parser.add_argument('-N2', help="(AGA) # of children per parent (int). Default = "+str(N2), type=int, default=N2)
+
 
         return parser.parse_args()
 
+def gen_pizza_chain(fId, iC, NIng, clients):
+    #TODO: write doc
+        if iC == 'best':
+            try:
+                score, pizzaChain = read_best(fId)
+                scoreBest = score
+            except:
+                print("Warning: random initialization")
+                iC ='random'
 
+        if iC == 'random':
+            pizzaChain = gen_pizza_chain_random(NIng)#random
+            score = calc_score(clients, pizzaChain)
+
+            scoreBest, pizzaChainBest = read_best(fId)
+
+            if score > scoreBest: #If random is better than best, save random as best
+                scoreBest, pizzaChainBest = score, copy(pizzaChain)
+                save_best(fId, scoreBest, pizzaChainBest)
+
+        elif iC == 'greedy':
+            try:
+                score, pizzaChain = read_greedy(fId)
+            except:
+                prin("Warning: executing graph routine...")
+                score, pizzaChain = greedy_graph_routine(clients, NIng)
+                save_greedy(fId, score, pizzaChain)
+
+            scoreBest, pizzaChainBest = read_best(fId)
+
+            if score > scoreBest:
+                scoreBest, pizzaChainBest = score, copy(pizzaChain)
+                save_best(fId, scoreBest, pizzaChainBest)
+
+        return score, scoreBest, pizzaChain
 
 def gen_pizza_chain_random(NIng):
     pizzaChain = np.random.choice([0,1], size = NIng)
