@@ -79,7 +79,7 @@ def read_flags(fId, iC):
         parser = argparse.ArgumentParser()
 
         parser.add_argument('-fId', help="Input file identifier (str). Default = "+fId, type=str, default=fId)
-        parser.add_argument('-iC', help="Initial configuration (str). 'random' or 'best'. Default = "+iC, type=str, default=iC)
+        parser.add_argument('-iC', help="Initial configuration (str). 'random', 'best', or 'greedy'. Default = "+iC, type=str, default=iC)
 
         return parser.parse_args()
 
@@ -96,13 +96,23 @@ if __name__ == '__main__':
 
         scoreBest, pizzaChainBest = marina.read_best(flags.fId)
 
-        if score > scoreBest:
+        if score > scoreBest: #If random is better than best, save random as best
             scoreBest, pizzaChainBest = score, copy(pizzaChain)
+            marina.save_best(flags.fId, scoreBest, pizzaChainBest)
+
+    elif flags.iC == 'greedy':
+        scoreGreedy, pizzaChain = marina.read_greedy(flags.fId)
+
+        scoreBest, pizzaChainBest = marina.read_best(flags.fId)
+
+        if scoreGreedy > scoreBest: #If greedy is better than best, save greedy as best
+            scoreBest, pizzaChainBest = scoreGreedy, copy(pizzaChain)
             marina.save_best(flags.fId, scoreBest, pizzaChainBest)
 
     elif flags.iC == 'best':
         scoreBest, pizzaChainBest = marina.read_best(flags.fId)
         pizzaChain = copy(pizzaChainBest)
+
 
     print('Best score so far: ', scoreBest)
 

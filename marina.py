@@ -200,6 +200,21 @@ def print_submission_file(fId, ingrList, score, pizzaChain):
     f.close()
 
 
+def read_greedy(fId):
+    """
+    Returns greedy config
+    :fId: string indicating the file
+    returns score, pizzaChain
+    """
+    filename = 'greedy_pizzas/'+fId+'-greedy_pizzaChain.npz'
+    try:
+        with np.load(filename) as data:
+            return int(data['score']), data['pizzaChain']
+    except:
+        print("Error: couldn't open "+filename)
+        print("Best score set to 0")
+        return 0, None
+
 """
 ====== SCORING ======
 """
@@ -218,8 +233,28 @@ def calc_score(clients, pizzaChain):
     return score
 
 """
-====== RANDOM INITIALIZERS======
+====== INITIALIZERS======
 """
+
+def read_flags(fId='a', iC='random', nMC=100, nMCgbl=100, beta=0.01, deltaBeta=0.005):
+
+        parser = argparse.ArgumentParser()
+
+        """ ALL SOLVERS """
+
+        parser.add_argument('-fId', help="Input file identifier (str). Default = "+fId, type=str, default=fId)
+        parser.add_argument('-iC', help="Initial configuration (str). 'random', 'best' or 'greedy'. Default = "+iC, type=str, default=iC)
+
+        """ SA SOLVER """
+
+        parser.add_argument('-nMC', help="Minibatch # of iterations (int). Default = "+str(nMC), type=int, default=nMC)
+        parser.add_argument('-nMCgbl', help="Bigbatch # of iterations (int). Default = "+str(nMCgbl), type=int, default=nMCgbl)
+        parser.add_argument('-beta', help="Initial beta (float). Default = "+str(beta), type=float, default=beta)
+        parser.add_argument('-deltaBeta', help="Step in beta (float). Default = "+str(deltaBeta), type=float, default=deltaBeta)
+
+        return parser.parse_args()
+
+
 
 def gen_pizza_chain_random(NIng):
     pizzaChain = np.random.choice([0,1], size = NIng)

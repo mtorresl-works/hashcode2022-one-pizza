@@ -26,23 +26,11 @@ def quot(beta, enerOld, enerNew, clients, C):
     return Q
 
 
-def read_flags(fId, iC, nMC, nMCgbl, deltaBeta):
-
-        parser = argparse.ArgumentParser()
-
-        parser.add_argument('-fId', help="Input file identifier (str). Default = "+fId, type=str, default=fId)
-        parser.add_argument('-iC', help="Initial configuration (str). 'random' or 'best'. Default = "+iC, type=str, default=iC)
-        parser.add_argument('-nMC', help="Minibatch # of iterations (int). Default = "+str(nMC), type=int, default=nMC)
-        parser.add_argument('-nMCgbl', help="Bigbatch # of iterations (int). Default = "+str(nMCgbl), type=int, default=nMCgbl)
-        parser.add_argument('-deltaBeta', help="Step in beta (float). Default = "+str(deltaBeta), type=float, default=deltaBeta)
-
-        return parser.parse_args()
-
 if __name__ == '__main__':
 
     start_time = time.time()
 
-    flags = read_flags(fId='a', iC='random', nMC=100, nMCgbl=20, deltaBeta=0.02)
+    flags = marina.read_flags()
 
     inp = marina.get_in_file_content(marina.inputFiles[flags.fId])
     ns = marina.parse(inp)
@@ -52,7 +40,7 @@ if __name__ == '__main__':
     print("# of clients: ", ns.C)
     print("# of ingredients: ", ns.NIng)
 
-    beta = abs(100/ns.C)
+
     p = 0.02 #maximum percentage of the chain to be change in a small change
 
     if flags.iC == 'random':
@@ -62,9 +50,20 @@ if __name__ == '__main__':
 
         scoreBest, pizzaChainBest = marina.read_best(flags.fId)
 
-        if scoreOld > scoreBest:
+        if scoreOld > scoreBest: #If random is better than best, save random as best
             scoreBest, enerBest, pizzaChainBest = scoreOld, enerOld, copy(pizzaChainOld)
             marina.save_best(flags.fId, scoreBest, pizzaChainBest)
+
+    elif flags.iC == 'greedy':
+        scoreGreedy, pizzaChainGreedy = marina.read_greedy(flags.fId)
+        enerGreed = score_to_energy(scoreGreedy)
+        scoreBest, pizzaChainBest = marina.read_best(flags.fId)
+
+        if scoreGreedy > scoreBest: #If greedy is better than best, save greedy as best
+            scoreBest, pizzaChainBest = scoreGreedy, copy(pizzaChainOld)
+            marina.save_best(flags.fId, scoreBest, pizzaChainBest)
+
+        scoreOld, enerOld, pizzaChainOld = scoreGreedy, enerGreedy, copy(pizzaChainGreedy)
 
     elif flags.iC == 'best':
         scoreBest, pizzaChainBest = marina.read_best(flags.fId)
@@ -89,11 +88,11 @@ if __name__ == '__main__':
                     scoreBest, enerBest, pizzaChainBest = scoreNew, enerNew, copy(pizzaChainNew)
                     marina.save_best(flags.fId, scoreBest, pizzaChainBest)
 
-            if(quot(beta, enerOld, enerNew, ns.clients, ns.C) > random.random()):
+            if(quot(flags.beta, enerOld, enerNew, ns.clients, ns.C) > random.random()):
                 #we accept
                 enerOld = enerNew
                 pizzaChainOld = copy(pizzaChainNew)
                 acc += 1
 
-        print("beta = {:.3f}, nFlips = {:d}, accept = {:.2f}, best : {:d} ({:.3f})".format(beta, nFlips, acc/flags.nMC, scoreBest, scoreBest/ns.C))
-        beta += flags.deltaBeta
+        print("beta = {:.3f}, nFlips = {:d}, accept = {:.2f}, best : {:d} ({:.3f})".format(flags.beta, nFlips, acc/flags.nMC, scoreBest, scoreBest/ns.C))
+        flags.beta += flags.deltaBeta
