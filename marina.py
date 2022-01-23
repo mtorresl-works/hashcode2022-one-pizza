@@ -169,6 +169,17 @@ def save_best(fId, score, pizzaChain):
         np.savez(filename, score=np.array(score), pizzaChain=pizzaChain)
 
 
+def read_greedy(fId):
+    """
+    Returns greedy config
+    :fId: string indicating the file
+    returns score, pizzaChain
+    """
+    filename = 'greedy_pizzas/'+fId+'-greedy_pizzaChain.npz'
+    with np.load(filename) as data:
+        return int(data['score']), data['pizzaChain']
+
+
 def save_greedy(fId, score, pizzaChain):
         """
         Saves pizza chain
@@ -208,22 +219,6 @@ def print_submission_file(fId, ingrList, score, pizzaChain):
     with open(filename, 'w') as f:
         f.write(pizza_chain_to_outstring(pizzaChain, N, ingrList))
     f.close()
-
-
-def read_greedy(fId):
-    """
-    Returns greedy config
-    :fId: string indicating the file
-    returns score, pizzaChain
-    """
-    filename = 'greedy_pizzas/'+fId+'-greedy_pizzaChain.npz'
-    try:
-        with np.load(filename) as data:
-            return int(data['score']), data['pizzaChain']
-    except:
-        print("Error: couldn't open "+filename)
-        print("Best score set to 0")
-        return 0, None
 
 """
 ====== SCORING ======
