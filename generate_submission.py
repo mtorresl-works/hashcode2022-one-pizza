@@ -20,4 +20,4 @@ if __name__ == '__main__':
     score, pizzaChain = marina.read_best(flags.fId)
     print("File "+flags.fId)
     print("Submission score: {:d}".format(score))
-    marina.print_submission_file(flags.fId, ns.ingrList, pizzaChain)
+    marina.print_submission_file(flags.fId, ns.ingrList, score, pizzaChain)
