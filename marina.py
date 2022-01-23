@@ -184,7 +184,7 @@ def print_best_score(fId):
             print("Best score is 0")
 
 
-def print_submission_file(fId, ingrList, pizzaChain):
+def print_submission_file(fId, ingrList, score, pizzaChain):
     """
     Converts the binary solution to the output string and prints it to a file.
     (WARNING: not used in the final version of the code, only for the example in this script).
@@ -193,7 +193,7 @@ def print_submission_file(fId, ingrList, pizzaChain):
     :param pizzaChain: a binary array (0s and 1s) indicating the presence or absence of an ingredient in the solution
     :return: void
     """
-    filename = './output_data/'+fId+'.out'
+    filename = './output_data/'+fId+'-score_{:d}.out'.format(score)
     N = sum(pizzaChain)
     with open(filename, 'w') as f:
         f.write(pizza_chain_to_outstring(pizzaChain, N, ingrList))
