@@ -152,6 +152,7 @@ def read_best(fId):
     returns score, pizzaChain
     """
     filename = 'best_runs/'+fId+'-best_pizzaChain.npz'
+    #filename = 'ortools_pizzas/'+fId+'-ortools_pizzaChain.npz'
     try:
         with np.load(filename) as data:
             return int(data['score']), data['pizzaChain']
@@ -191,6 +192,14 @@ def save_greedy(fId, score, pizzaChain):
         filename = 'greedy_pizzas/'+fId+'-greedy_pizzaChain.npz'
         np.savez(filename, score=np.array(score), pizzaChain=pizzaChain)
 
+def save_ortools(fId, score, pizzaChain):
+        """
+        Saves pizza chain
+        :fId: string indicating the file
+        :score: integer storing best score
+        """
+        filename = 'ortools_pizzas/'+fId+'-ortools_pizzaChain.npz'
+        np.savez(filename, score=np.array(score), pizzaChain=pizzaChain)
 
 def print_best_score(fId):
         """
@@ -318,8 +327,8 @@ def check_compatibility(two_clients, edgeList):
     index1 = two_clients[1].id
     # if not (index0 % 100) and index1 == index0 + 1:
     #     print("Checking clients "+str(index0)+" and "+str(index1))
-    if two_clients[0].l_ingr.intersection(two_clients[1].d_ingr) or two_clients[1].l_ingr.intersection(
-            two_clients[0].d_ingr):
+    if set(two_clients[0].l_ingr).intersection(set(two_clients[1].d_ingr)) or set(two_clients[1].l_ingr).intersection(
+            set(two_clients[0].d_ingr)):
         edgeList.append((index0, index1))
 
 def create_graph(clients):
