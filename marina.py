@@ -194,12 +194,27 @@ def save_greedy(fId, score, pizzaChain):
 
 def save_ortools(fId, score, pizzaChain):
         """
+        Deprecated: now or-tools solvers return indices relevant to graphs
+        (UPDATE SCIP)
         Saves pizza chain
         :fId: string indicating the file
         :score: integer storing best score
         """
         filename = 'ortools_pizzas/'+fId+'-ortools_pizzaChain.npz'
         np.savez(filename, score=np.array(score), pizzaChain=pizzaChain)
+
+def save_anticlique(fId, anticlique):
+    """
+    :anticlique: is a sequence of indices of nodes in the anticlique
+    """
+    nNodes = len(anticlique)
+    filename = './anticlique_data/'+fId+'-score_{:d}.npz'.format(nNodes)
+    np.savez(filename, graphVs=anticlique)
+
+def read_anticlique(fId, nNodes):
+    filename = './anticlique_data/'+fId+'-score_{:d}.npz'.format(nNodes)
+    return np.load(filename)['graphVs']
+
 
 def print_best_score(fId):
         """
@@ -322,6 +337,12 @@ def gen_pizza_chain_random(NIng):
 ====== MAXIMUM INDEPENDENT SET ======
 To find optimal initial conditions
 """
+
+"""
+==== CREATE GRAPHS ====
+"""
+
+
 def check_compatibility(two_clients, edgeList):
     index0 = two_clients[0].id
     index1 = two_clients[1].id
@@ -342,6 +363,31 @@ def create_graph(clients):
     g.add_edges(edgeList)
     print("Done! Vertex = "+str(g.vcount())+" Edges = "+str(g.ecount()))
     return g
+
+"""
+===== SAVE AND READ GRAPHS ======
+"""
+def save_graph(fId, graph):
+        """
+        Saves graphs to open with different solvers
+        """
+        filename = './graphs_data/'+fId+'.dat'
+        graph.write(filename, format='pickle')
+
+
+def read_graph(fId):
+        """
+        Returns a grahp object
+        :fId: string indicating the file
+        """
+        filename = 'graphs_data/'+fId+'.dat'
+        graph = igraph.read(filename, format='pickle')
+        return graph
+
+
+"""
+===== GREEDY ROUTINES =====
+"""
 
 def largest_clients_group(g):
     print("Calculating the largest independent set of clients...")
