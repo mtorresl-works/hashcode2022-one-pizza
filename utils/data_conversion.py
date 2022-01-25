@@ -1,9 +1,8 @@
 import numpy as np
 import igraph as ig
 import argparse
-
-import clients
-import read_write
+import utils.clients as clients
+import utils.read_write as read_write
 
 inputFiles = {'a': "./data_input/a_an_example.in",\
               'b': "./data_input/b_basic.in",\
@@ -15,27 +14,27 @@ inputFiles = {'a': "./data_input/a_an_example.in",\
 def read_flags(fId='a', iC='random', nMC=100, nMCgbl=100, beta=0.01, deltaBeta=0.005, nFlips=5, N1=5, N2=2):
     """Reads flags for all solvers"""
 
-        parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser()
 
-        """ ALL SOLVERS """
+    """ ALL SOLVERS """
 
-        parser.add_argument('-fId', help="Input file identifier (str). Default = "+fId, type=str, default=fId)
-        parser.add_argument('-iC', help="Initial configuration (str). 'random', 'best' or 'greedy'. Default = "+iC, type=str, default=iC)
+    parser.add_argument('-fId', help="Input file identifier (str). Default = "+fId, type=str, default=fId)
+    parser.add_argument('-iC', help="Initial configuration (str). 'random', 'best' or 'greedy'. Default = "+iC, type=str, default=iC)
 
-        """ SA SOLVER """
+    """ SA SOLVER """
 
-        parser.add_argument('-nMC', help="(SA) Minibatch # of iterations (int). Default = "+str(nMC), type=int, default=nMC)
-        parser.add_argument('-nMCgbl', help="(SA) Bigbatch # of iterations (int). Default = "+str(nMCgbl), type=int, default=nMCgbl)
-        parser.add_argument('-beta', help="(SA) Initial beta (float). Default = "+str(beta), type=float, default=beta)
-        parser.add_argument('-deltaBeta', help="(SA) Step in beta (float). Default = "+str(deltaBeta), type=float, default=deltaBeta)
-        parser.add_argument('-nFlips', help="(SA) Flips # in small change (int). Default = "+str(nFlips), type=int, default=nFlips)
+    parser.add_argument('-nMC', help="(SA) Minibatch # of iterations (int). Default = "+str(nMC), type=int, default=nMC)
+    parser.add_argument('-nMCgbl', help="(SA) Bigbatch # of iterations (int). Default = "+str(nMCgbl), type=int, default=nMCgbl)
+    parser.add_argument('-beta', help="(SA) Initial beta (float). Default = "+str(beta), type=float, default=beta)
+    parser.add_argument('-deltaBeta', help="(SA) Step in beta (float). Default = "+str(deltaBeta), type=float, default=deltaBeta)
+    parser.add_argument('-nFlips', help="(SA) Flips # in small change (int). Default = "+str(nFlips), type=int, default=nFlips)
 
-        """ AGA SOLVER """
-        parser.add_argument('-N1', help="(AGA) # of parents (int). Default = "+str(N1), type=int, default=N1)
-        parser.add_argument('-N2', help="(AGA) # of children per parent (int). Default = "+str(N2), type=int, default=N2)
+    """ AGA SOLVER """
+    parser.add_argument('-N1', help="(AGA) # of parents (int). Default = "+str(N1), type=int, default=N1)
+    parser.add_argument('-N2', help="(AGA) # of children per parent (int). Default = "+str(N2), type=int, default=N2)
 
 
-        return parser.parse_args()
+    return parser.parse_args()
 
 
 def input_string_to_clients(filestring):
@@ -46,13 +45,13 @@ def input_string_to_clients(filestring):
     """
     data = filestring.split('\n')
     C = int(data[0])
-    clients = []
+    cs = []
     for cL, cD in zip(data[1::2], data[2::2]):
         cL = cL.split(' ')  # split in an array of words
         cD = cD.split(' ')
-        clients.append(Client(cL, cD))
+        cs.append(clients.Client(cL, cD))
 
-    return C, clients
+    return C, cs
 
 
 def create_client_ns(fId):
@@ -60,7 +59,7 @@ def create_client_ns(fId):
     Generates namespace with relevant variables.
     To be called from solver and submission_generator
     """
-    inp = read_and_write.input_file_to_string(inputFiles[fId])
+    inp = read_write.input_file_to_string(inputFiles[fId])
     ns = argparse.Namespace()
     ns.C, ns.clients = input_string_to_clients(inp) #see function above
     ns.ingrList = clients.cs_to_ingr_list(ns.clients)
@@ -99,7 +98,7 @@ def graph_to_pizza(graph, NIng):
 
 def clients_to_graph(cs):
     """Creates graph object from client list"""
-    
+
     def check_compatibility(two_cs, edgeList):
         index0 = two_cs[0].id
         index1 = two_cs[1].id
