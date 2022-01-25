@@ -1,3 +1,7 @@
+import numpy as np
+import igraph as ig
+
+
 def input_file_to_string(filename):
     """
     Reads file contents and transforms it in a string
@@ -40,3 +44,19 @@ def export_pizza(fId, score, method, pizzaChain):
     """
     filename = './data_submissions/pizzas/'+fId+'-pizzaChain-'+method+'.npz'
     np.savez(filename, score=np.array(score), pizzaChain=pizzaChain)
+
+def read_graph(fId):
+        """
+        Returns a grahp object
+        :fId: string indicating the file
+        """
+        filename = 'data_graphs_raw/'+fId+'.dat'
+        graph = ig.read(filename, format='pickle')
+        return graph
+
+def export_graph(fId, graph):
+        """
+        Saves graphs to open with different solvers
+        """
+        filename = './data_graphs_raw/'+fId+'.dat'
+        graph.write(filename, format='pickle')

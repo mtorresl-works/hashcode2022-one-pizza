@@ -368,22 +368,22 @@ def create_graph(clients):
 """
 ===== SAVE AND READ GRAPHS ======
 """
-def save_graph(fId, graph):
-        """
-        Saves graphs to open with different solvers
-        """
-        filename = './data_graphs_raw/'+fId+'.dat'
-        graph.write(filename, format='pickle')
-
-
-def read_graph(fId):
-        """
-        Returns a grahp object
-        :fId: string indicating the file
-        """
-        filename = 'data_graphs_raw/'+fId+'.dat'
-        graph = igraph.read(filename, format='pickle')
-        return graph
+# def save_graph(fId, graph):
+#         """
+#         Saves graphs to open with different solvers
+#         """
+#         filename = './data_graphs_raw/'+fId+'.dat'
+#         graph.write(filename, format='pickle')
+#
+#
+# def read_graph(fId):
+#         """
+#         Returns a grahp object
+#         :fId: string indicating the file
+#         """
+#         filename = 'data_graphs_raw/'+fId+'.dat'
+#         graph = igraph.read(filename, format='pickle')
+#         return graph
 
 
 """
