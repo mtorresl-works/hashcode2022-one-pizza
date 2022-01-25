@@ -4,7 +4,9 @@ import igraph as ig
 
 def input_file_to_string(filename):
     """
-    Reads file contents and transforms it in a string
+    Reads file contents and transforms it in a string.
+    :param filename: a string containing the name of the file
+    :return: the file content as a string
     """
     try:
         with open(filename) as f:
@@ -14,6 +16,12 @@ def input_file_to_string(filename):
         return -1
 
 def string_to_submission_file(oStr, fId, score):
+    '''
+    Prints the solution string to a submission file
+    :param oStr: string variable with the file content
+    :param fId: string indicating the (input example) file ID
+    :param score: integer storing best score
+    '''
     filename = './data_submissions/'+fId+'-score_{:d}.out'.format(score)
     with open(filename, 'w') as f:
         f.write(oStr)
@@ -21,10 +29,10 @@ def string_to_submission_file(oStr, fId, score):
 
 def read_pizza(fId, method):
     """
-    Returns a pizza config
+    return a pizza config
     :fId: string indicating the file
     :method: greedy, mc, or
-    returns score, pizzaChain
+    :return: score, pizzaChain
     """
     filename = './data_submissions/pizzas/'+fId+'-pizzaChain-'+method+'.npz'
     try:
@@ -38,25 +46,29 @@ def read_pizza(fId, method):
 def export_pizza(fId, score, method, pizzaChain):
     """
     Saves pizza chain
-    :fId: string indicating the file
-    :method: greedy, mc, or
-    :score: integer storing best score
+    :param fId: string indicating the file
+    :param score: integer storing best score
+    :param method: the solver routine type: greedy, mc, or
+    :param pizzaChain: a binary array (0s and 1s) indicating the presence or absence of an ingredient in the solution
     """
     filename = './data_submissions/pizzas/'+fId+'-pizzaChain-'+method+'.npz'
     np.savez(filename, score=np.array(score), pizzaChain=pizzaChain)
 
 def read_graph(fId):
-        """
-        Returns a grahp object
-        :fId: string indicating the file
-        """
-        filename = 'data_graphs_raw/'+fId+'.dat'
-        graph = ig.read(filename, format='pickle')
-        return graph
+    """
+    Reads a binary file to a grahp object
+    :param fId: string indicating the file
+    :return: a graph object
+    """
+    filename = 'data_graphs_raw/'+fId+'.dat'
+    graph = ig.read(filename, format='pickle')
+    return graph
 
 def export_graph(fId, graph):
-        """
-        Saves graphs to open with different solvers
-        """
-        filename = './data_graphs_raw/'+fId+'.dat'
-        graph.write(filename, format='pickle')
+    """
+    Prints a graph object to a binary file
+    :fId: string indicating the file
+    :param graph: a graph object
+    """
+    filename = './data_graphs_raw/'+fId+'.dat'
+    graph.write(filename, format='pickle')
