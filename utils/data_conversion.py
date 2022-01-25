@@ -13,6 +13,7 @@ inputFiles = {'a': "./data_input/a_an_example.in",\
 
 
 def read_flags(fId='a', iC='random', nMC=100, nMCgbl=100, beta=0.01, deltaBeta=0.005, nFlips=5, N1=5, N2=2):
+    """Reads flags for all solvers"""
 
         parser = argparse.ArgumentParser()
 
@@ -34,13 +35,13 @@ def read_flags(fId='a', iC='random', nMC=100, nMCgbl=100, beta=0.01, deltaBeta=0
         parser.add_argument('-N2', help="(AGA) # of children per parent (int). Default = "+str(N2), type=int, default=N2)
 
 
-        # return parser.parse_args()
+        return parser.parse_args()
 
 
 def input_string_to_clients(filestring):
     """
     Parses the input file content to the list of clients.
-    :param filestring: the input file content in one line
+    :param filestring: the input file content in one string
     :return: a tuple containing the number of clients and a preliminary list of clients only with l_ingr_s and d_ingr_s
     """
     data = filestring.split('\n')
@@ -56,12 +57,12 @@ def input_string_to_clients(filestring):
 
 def create_client_ns(fId):
     """
-    Generates namespace with relevant variables from string.
+    Generates namespace with relevant variables.
     To be called from solver and submission_generator
     """
     inp = read_and_write.input_file_to_string(inputFiles[fId])
     ns = argparse.Namespace()
-    ns.C, ns.clients = input_string_to_clients(inp)
+    ns.C, ns.clients = input_string_to_clients(inp) #see function above
     ns.ingrList = clients.cs_to_ingr_list(ns.clients)
     ns.NIng = len(ns.ingrList)
     clients.update_indexes(ns.clients, ns.ingrList)
@@ -84,29 +85,37 @@ def pizzaChain_to_outstring(pizzaChain, NIng, ingrList):
 
 
 def graph_to_pizza(graph, NIng):
+    """
+    Creates a pizza (np.array of 0s and 1s of length Number of Ingredients)
+    from a graph object.
+    Vertex in graph have the attribute of client
+    """
     commonLikesIndex = [client.l_ingr for client in graph.vs['client_info']]
     activeIngr = list(set().union(*commonLikesIndex))
     pizzaChain = np.zeros(NIng)
     pizzaChain[activeIngr] = 1
     return pizzaChain
 
-def clients_to_graph(clients):
-    def check_compatibility(two_clients, edgeList):
-        index0 = two_clients[0].id
-        index1 = two_clients[1].id
+
+def clients_to_graph(cs):
+    """Creates graph object from client list"""
+    
+    def check_compatibility(two_cs, edgeList):
+        index0 = two_cs[0].id
+        index1 = two_cs[1].id
         # if not (index0 % 100) and index1 == index0 + 1:
         #     print("Checking clients "+str(index0)+" and "+str(index1))
-        if set(two_clients[0].l_ingr).intersection(set(two_clients[1].d_ingr)) or set(two_clients[1].l_ingr).intersection(
-                set(two_clients[0].d_ingr)):
+        if set(two_cs[0].l_ingr).intersection(set(two_cs[1].d_ingr)) or set(two_cs[1].l_ingr).intersection(
+                set(two_cs[0].d_ingr)):
             edgeList.append((index0, index1))
 
     print("Creating client network...")
     g = ig.Graph()
-    g.add_vertices(len(clients))
-    g.vs["client_info"] = clients
+    g.add_vertices(len(cs))
+    g.vs["client_info"] = cs
     edgeList = []
-    for two_clients in combinations(clients, 2):
-        check_compatibility(two_clients, edgeList)
+    for two_cs in combinations(cs, 2):
+        check_compatibility(two_cs, edgeList)
     g.add_edges(edgeList)
     print("Done! Vertex = "+str(g.vcount())+" Edges = "+str(g.ecount()))
     return g
