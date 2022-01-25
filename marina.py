@@ -82,11 +82,11 @@ def update_indexes(clients, ingrList):
 ====== FILE PROCESSING ======
 """
 
-inputFiles = {'a': "./input_data/a_an_example.in",\
-              'b': "./input_data/b_basic.in",\
-              'c': "./input_data/c_coarse.in",\
-              'd': "./input_data/d_difficult.in",\
-              'e': "./input_data/e_elaborate.in"}
+inputFiles = {'a': "./data_input/a_an_example.in",\
+              'b': "./data_input/b_basic.in",\
+              'c': "./data_input/c_coarse.in",\
+              'd': "./data_input/d_difficult.in",\
+              'e': "./data_input/e_elaborate.in"}
 
 # def get_in_file_content(filename):
 #     """
@@ -208,11 +208,11 @@ def save_anticlique(fId, anticlique):
     :anticlique: is a sequence of indices of nodes in the anticlique
     """
     nNodes = len(anticlique)
-    filename = './anticlique_data/'+fId+'-score_{:d}.npz'.format(nNodes)
+    filename = './data_antigraphs/'+fId+'-score_{:d}.npz'.format(nNodes)
     np.savez(filename, graphVs=anticlique)
 
 def read_anticlique(fId, nNodes):
-    filename = './anticlique_data/'+fId+'-score_{:d}.npz'.format(nNodes)
+    filename = './data_antigraphs/'+fId+'-score_{:d}.npz'.format(nNodes)
     return np.load(filename)['graphVs']
 
 # DEPRECATED
@@ -221,7 +221,7 @@ def print_best_score(fId):
         Prints best score ever
         :fId: string indicating the file
         """
-        filename = 'best_runs/'+fId+'-best_pizzaChain.npz'
+        filename = 'pizzas/'+fId+'-best_pizzaChain.npz'
         try:
             with np.load(filename) as data:
                 print("Best score ever for file "+fId+": {:d}".format(int(data['score'])))
@@ -372,7 +372,7 @@ def save_graph(fId, graph):
         """
         Saves graphs to open with different solvers
         """
-        filename = './graphs_data/'+fId+'.dat'
+        filename = './data_graphs_raw/'+fId+'.dat'
         graph.write(filename, format='pickle')
 
 
@@ -381,7 +381,7 @@ def read_graph(fId):
         Returns a grahp object
         :fId: string indicating the file
         """
-        filename = 'graphs_data/'+fId+'.dat'
+        filename = 'data_graphs_raw/'+fId+'.dat'
         graph = igraph.read(filename, format='pickle')
         return graph
 
