@@ -42,7 +42,7 @@ class Client:
         print(self.d_ingr_s)
 
 
-def gen_ingr(clients):
+def cs_to_ingr_list(clients):
     """
     Creates the complete list of ingredients.
     :param clients: the list containing all the clients
