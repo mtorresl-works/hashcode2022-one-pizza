@@ -2,6 +2,7 @@ import numpy as np
 import igraph as ig
 import argparse
 
+import clients
 import read_write
 
 inputFiles = {'a': "./data_input/a_an_example.in",\
@@ -61,9 +62,9 @@ def create_client_ns(fId):
     inp = read_and_write.input_file_to_string(inputFiles[fId])
     ns = argparse.Namespace()
     ns.C, ns.clients = input_string_to_clients(inp)
-    ns.ingrList = gen_ingr(ns.clients)
+    ns.ingrList = clients.cs_to_ingr_list(ns.clients)
     ns.NIng = len(ns.ingrList)
-    update_indexes(ns.clients, ns.ingrList)
+    clients.update_indexes(ns.clients, ns.ingrList)
 
     return ns
 
