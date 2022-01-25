@@ -88,16 +88,16 @@ inputFiles = {'a': "./input_data/a_an_example.in",\
               'd': "./input_data/d_difficult.in",\
               'e': "./input_data/e_elaborate.in"}
 
-def get_in_file_content(filename):
-    """
-    Reads file contents and transforms it in a string
-    """
-    try:
-        with open(filename) as f:
-            return f.read()
-    except:
-        print("Error opening file "+filename)
-        return -1
+# def get_in_file_content(filename):
+#     """
+#     Reads file contents and transforms it in a string
+#     """
+#     try:
+#         with open(filename) as f:
+#             return f.read()
+#     except:
+#         print("Error opening file "+filename)
+#         return -1
 
 
 def parse(inp):
@@ -145,31 +145,31 @@ def pizza_chain_to_outstring(pizzaChain, NIng, ingrList):
     return otr + "\n"
 
 
-def read_best(fId):
-    """
-    Returns best config ever
-    :fId: string indicating the file
-    returns score, pizzaChain
-    """
-    filename = 'best_runs/'+fId+'-best_pizzaChain.npz'
-    #filename = 'ortools_pizzas/'+fId+'-ortools_pizzaChain.npz'
-    try:
-        with np.load(filename) as data:
-            return int(data['score']), data['pizzaChain']
-    except:
-        print("Error: couldn't open "+filename)
-        print("Best score set to 0")
-        return 0, None
+# def read_best(fId):
+#     """
+#     Returns best config ever
+#     :fId: string indicating the file
+#     returns score, pizzaChain
+#     """
+#     filename = 'best_runs/'+fId+'-best_pizzaChain.npz'
+#     #filename = 'ortools_pizzas/'+fId+'-ortools_pizzaChain.npz'
+#     try:
+#         with np.load(filename) as data:
+#             return int(data['score']), data['pizzaChain']
+#     except:
+#         print("Error: couldn't open "+filename)
+#         print("Best score set to 0")
+#         return 0, None
 
 
-def save_best(fId, score, pizzaChain):
-        """
-        Saves pizza chain
-        :fId: string indicating the file
-        :score: integer storing best score
-        """
-        filename = 'best_runs/'+fId+'-best_pizzaChain.npz'
-        np.savez(filename, score=np.array(score), pizzaChain=pizzaChain)
+# def save_best(fId, score, pizzaChain):
+#         """
+#         Saves pizza chain
+#         :fId: string indicating the file
+#         :score: integer storing best score
+#         """
+#         filename = 'best_runs/'+fId+'-best_pizzaChain.npz'
+#         np.savez(filename, score=np.array(score), pizzaChain=pizzaChain)
 
 
 def read_greedy(fId):
@@ -231,20 +231,20 @@ def print_best_score(fId):
             print("Best score is 0")
 
 
-def print_submission_file(fId, ingrList, score, pizzaChain):
-    """
-    Converts the binary solution to the output string and prints it to a file.
-    (WARNING: not used in the final version of the code, only for the example in this script).
-    :param filenameOut: the name of the output file.
-    :param ingrList: a list of strings with all the ingredients.
-    :param pizzaChain: a binary array (0s and 1s) indicating the presence or absence of an ingredient in the solution
-    :return: void
-    """
-    filename = './output_data/'+fId+'-score_{:d}.out'.format(score)
-    N = sum(pizzaChain)
-    with open(filename, 'w') as f:
-        f.write(pizza_chain_to_outstring(pizzaChain, N, ingrList))
-    f.close()
+# def print_submission_file(fId, ingrList, score, pizzaChain):
+#     """
+#     Converts the binary solution to the output string and prints it to a file.
+#     (WARNING: not used in the final version of the code, only for the example in this script).
+#     :param filenameOut: the name of the output file.
+#     :param ingrList: a list of strings with all the ingredients.
+#     :param pizzaChain: a binary array (0s and 1s) indicating the presence or absence of an ingredient in the solution
+#     :return: void
+#     """
+#     filename = './output_data/'+fId+'-score_{:d}.out'.format(score)
+#     N = sum(pizzaChain)
+#     with open(filename, 'w') as f:
+#         f.write(pizza_chain_to_outstring(pizzaChain, N, ingrList))
+#     f.close()
 
 """
 ====== SCORING ======
