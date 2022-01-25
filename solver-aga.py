@@ -1,7 +1,7 @@
 import numpy as np
 from math import exp, ceil
 import time
-import marina
+import data_conversion
 from copy import copy
 
 
@@ -61,7 +61,7 @@ def filter_by_score(scoresN1, population, clients, N1):
     The first N1 elements in population are the parents whose score is known (scoresN1)"""
     scores = scoresN1
     for pizzaChain in population[N1:]:
-        s = marina.calc_score(clients, pizzaChain)
+        s = data_conversion.calc_score(clients, pizzaChain)
         scores.append(s)
 
     scores = np.array(scores)  # To be able to use arg sort
@@ -73,12 +73,12 @@ def filter_by_score(scoresN1, population, clients, N1):
 
 if __name__ == '__main__':
 
-    flags = marina.read_flags()
+    flags = data_conversion.read_flags()
 
-    inp = marina.get_in_file_content(marina.inputFiles[flags.fId])
-    ns = marina.parse(inp)
+    inp = data_conversion.get_in_file_content(data_conversion.inputFiles[flags.fId])
+    ns = data_conversion.parse(inp)
 
-    score, scoreBest, pizzaChain = marina.gen_pizza_chain(flags.fId, flags.iC, ns.NIng, ns.clients)
+    score, scoreBest, pizzaChain = data_conversion.gen_pizza_chain(flags.fId, flags.iC, ns.NIng, ns.clients)
 
     print('Best score so far: ', scoreBest)
 
@@ -88,7 +88,7 @@ if __name__ == '__main__':
 
     scoresN1 = []
     for pizzaChain in population:
-        s = marina.calc_score(ns.clients, pizzaChain)
+        s = data_conversion.calc_score(ns.clients, pizzaChain)
         scoresN1.append(s)
     scoresN1 = np.array(scoresN1)  # To be able to use arg sort
     idSorted = np.argsort(-scoresN1)  # sort idx in ascending ording
@@ -106,11 +106,11 @@ if __name__ == '__main__':
 
         if scores[0] > scoreBest:
             print("Best hit")
-            scoreBest, pizzaChainBest = marina.read_best(flags.fId)
+            scoreBest, pizzaChainBest = data_conversion.read_best(flags.fId)
             if scores[0] > scoreBest:
                 print("BEST HIT EVER: {:d}".format(scores[0]))
                 scoreBest, pizzaChainBest = scores[0], copy(population[0])
-                marina.save_best(flags.fId, scoreBest, pizzaChainBest)
+                data_conversion.save_best(flags.fId, scoreBest, pizzaChainBest)
 
         print("Max score: {:d} ({:.3f})".format(scores[0], scores[0]/ns.C))
         if scoresN1[0] == scores[0]:

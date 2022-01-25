@@ -1,20 +1,20 @@
 import argparse
 import igraph as ig
-import marina
+import data_conversion
 
 if __name__ == '__main__':
 
-    flags = marina.read_flags()
+    flags = data_conversion.read_flags()
 
-    inp = marina.get_in_file_content(marina.inputFiles[flags.fId])
-    ns = marina.parse(inp)
+    inp = data_conversion.get_in_file_content(data_conversion.inputFiles[flags.fId])
+    ns = data_conversion.parse(inp)
 
     ### GRAPH DEFINITION
-    g = marina.create_graph(ns.clients)
+    g = data_conversion.create_graph(ns.clients)
     print("Generated graph: ")
     ig.summary(g)
-    marina.save_graph(flags.fId, g)
-    gg = marina.read_graph(flags.fId)
+    data_conversion.save_graph(flags.fId, g)
+    gg = data_conversion.read_graph(flags.fId)
     print("Stored graph: ")
     ig.summary(gg)
 

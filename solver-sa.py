@@ -5,7 +5,7 @@ from copy import *
 import time
 import numpy as np
 
-import marina
+import data_conversion
 """
 ====== SOLVING ALGORITHM: SIMULATED ANNEALING ======
 """
@@ -30,10 +30,10 @@ if __name__ == '__main__':
 
     start_time = time.time()
 
-    flags = marina.read_flags()
+    flags = data_conversion.read_flags()
 
-    inp = marina.get_in_file_content(marina.inputFiles[flags.fId])
-    ns = marina.parse(inp)
+    inp = data_conversion.get_in_file_content(data_conversion.inputFiles[flags.fId])
+    ns = data_conversion.parse(inp)
 
     score_to_energy = lambda score: (ns.C-score)
 
@@ -43,7 +43,7 @@ if __name__ == '__main__':
 
     p = 0.02 #maximum percentage of the chain to be change in a small change
 
-    score, scoreBest, pizzaChainOld = marina.gen_pizza_chain(flags.fId, flags.iC, ns.NIng, ns.clients)
+    score, scoreBest, pizzaChainOld = data_conversion.gen_pizza_chain(flags.fId, flags.iC, ns.NIng, ns.clients)
     enerOld = score_to_energy(score)
 
     print('Best score so far: ', scoreBest)
@@ -54,16 +54,16 @@ if __name__ == '__main__':
         #round((nMC_global-i)/nMC_global * p*NIng)+1 #number of flips in a small change,decreases with i
         for j in range(flags.nMC):
             pizzaChainNew = small_change(pizzaChainOld, ns.NIng, nFlips)
-            scoreNew = marina.calc_score(ns.clients, pizzaChainNew)
+            scoreNew = data_conversion.calc_score(ns.clients, pizzaChainNew)
             enerNew = score_to_energy(scoreNew)
             #print("Score: "+str(ener_to_score(enerNew)))
             if scoreNew > scoreBest: #keep track of the absolute minimum
                 print("Best hit")
-                scoreBest, pizzaChainBest = marina.read_best(flags.fId) #scoreBest in file
+                scoreBest, pizzaChainBest = data_conversion.read_best(flags.fId) #scoreBest in file
                 if scoreNew > scoreBest:
                     print("BEST HIT EVER: {:d}".format(scoreNew))
                     scoreBest, enerBest, pizzaChainBest = scoreNew, enerNew, copy(pizzaChainNew)
-                    marina.save_best(flags.fId, scoreBest, pizzaChainBest)
+                    data_conversion.save_best(flags.fId, scoreBest, pizzaChainBest)
 
             if(quot(flags.beta, enerOld, enerNew, ns.clients, ns.C) > random.random()):
                 #we accept

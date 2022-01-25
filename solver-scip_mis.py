@@ -5,19 +5,18 @@ import numpy as np
 import igraph as ig
 from ortools.linear_solver import pywraplp
 
-import marina
+import utils.data_conversion as data_conversion
 
 if __name__ == '__main__':
 
     start_time = time.time()
 
-    flags = marina.read_flags()
+    flags = data_conversion.read_flags()
 
-    inp = marina.get_in_file_content(marina.inputFiles[flags.fId])
-    ns = marina.parse(inp)
+    ns = data_conversion.create_client_ns(flags.fId)
 
     ### GRAPH DEFINITION
-    g = marina.create_graph(ns.clients)
+    g = data_conversion.clients_to_graph(ns.clients)
     edges = g.get_edgelist()
     numVertex = ns.C
 
@@ -41,9 +40,11 @@ if __name__ == '__main__':
 
     # Print solution.
     mis = [g.vs[i]["client_info"] for i in range(numVertex) if x[i].solution_value() > 0.5]
+    gsolved = g.copy()
 
-    pizzaChain = marina.optimal_pizza_chain(mis, ns.NIng)
 
-    score = marina.calc_score(ns.clients, pizzaChain)
-    marina.save_ortools(flags.fId, score, pizzaChain)
+    pizzaChain = data_conversion.optimal_pizza_chain(mis, ns.NIng)
+
+    score = data_conversion.calc_score(ns.clients, pizzaChain)
+    data_conversion.save_ortools(flags.fId, score, pizzaChain)
     print("Final score: ", score)

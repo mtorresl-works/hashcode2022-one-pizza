@@ -1,9 +1,10 @@
 import numpy as np
 import igraph as ig
 import argparse
+from itertools import combinations
 
-import clients
-import read_write
+import utils.clients as clients
+import utils.read_write as read_write
 
 inputFiles = {'a': "./data_input/a_an_example.in",\
               'b': "./data_input/b_basic.in",\
@@ -49,7 +50,7 @@ def input_string_to_clients(filestring):
     for cL, cD in zip(data[1::2], data[2::2]):
         cL = cL.split(' ')  # split in an array of words
         cD = cD.split(' ')
-        clients.append(Client(cL, cD))
+        clients.append(clients.Client(cL, cD))
 
     return C, clients
 
@@ -59,7 +60,7 @@ def create_client_ns(fId):
     Generates namespace with relevant variables from string.
     To be called from solver and submission_generator
     """
-    inp = read_and_write.input_file_to_string(inputFiles[fId])
+    inp = read_write.input_file_to_string(inputFiles[fId])
     ns = argparse.Namespace()
     ns.C, ns.clients = input_string_to_clients(inp)
     ns.ingrList = clients.cs_to_ingr_list(ns.clients)
