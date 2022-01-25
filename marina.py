@@ -82,11 +82,11 @@ def update_indexes(clients, ingrList):
 ====== FILE PROCESSING ======
 """
 
-inputFiles = {'a': "./input_data/a_an_example.in",\
-              'b': "./input_data/b_basic.in",\
-              'c': "./input_data/c_coarse.in",\
-              'd': "./input_data/d_difficult.in",\
-              'e': "./input_data/e_elaborate.in"}
+inputFiles = {'a': "./data_input/a_an_example.in",\
+              'b': "./data_input/b_basic.in",\
+              'c': "./data_input/c_coarse.in",\
+              'd': "./data_input/d_difficult.in",\
+              'e': "./data_input/e_elaborate.in"}
 
 def get_in_file_content(filename):
     """
@@ -151,7 +151,7 @@ def read_best(fId):
     :fId: string indicating the file
     returns score, pizzaChain
     """
-    filename = 'best_runs/'+fId+'-best_pizzaChain.npz'
+    filename = 'pizzas/'+fId+'-best_pizzaChain.npz'
     #filename = 'ortools_pizzas/'+fId+'-ortools_pizzaChain.npz'
     try:
         with np.load(filename) as data:
@@ -168,7 +168,7 @@ def save_best(fId, score, pizzaChain):
         :fId: string indicating the file
         :score: integer storing best score
         """
-        filename = 'best_runs/'+fId+'-best_pizzaChain.npz'
+        filename = 'pizzas/'+fId+'-best_pizzaChain.npz'
         np.savez(filename, score=np.array(score), pizzaChain=pizzaChain)
 
 
@@ -208,11 +208,11 @@ def save_anticlique(fId, anticlique):
     :anticlique: is a sequence of indices of nodes in the anticlique
     """
     nNodes = len(anticlique)
-    filename = './anticlique_data/'+fId+'-score_{:d}.npz'.format(nNodes)
+    filename = './data_antigraphs/'+fId+'-score_{:d}.npz'.format(nNodes)
     np.savez(filename, graphVs=anticlique)
 
 def read_anticlique(fId, nNodes):
-    filename = './anticlique_data/'+fId+'-score_{:d}.npz'.format(nNodes)
+    filename = './data_antigraphs/'+fId+'-score_{:d}.npz'.format(nNodes)
     return np.load(filename)['graphVs']
 
 # DEPRECATED
@@ -221,7 +221,7 @@ def print_best_score(fId):
         Prints best score ever
         :fId: string indicating the file
         """
-        filename = 'best_runs/'+fId+'-best_pizzaChain.npz'
+        filename = 'pizzas/'+fId+'-best_pizzaChain.npz'
         try:
             with np.load(filename) as data:
                 print("Best score ever for file "+fId+": {:d}".format(int(data['score'])))
@@ -240,7 +240,7 @@ def print_submission_file(fId, ingrList, score, pizzaChain):
     :param pizzaChain: a binary array (0s and 1s) indicating the presence or absence of an ingredient in the solution
     :return: void
     """
-    filename = './output_data/'+fId+'-score_{:d}.out'.format(score)
+    filename = './data_submissions/'+fId+'-score_{:d}.out'.format(score)
     N = sum(pizzaChain)
     with open(filename, 'w') as f:
         f.write(pizza_chain_to_outstring(pizzaChain, N, ingrList))
@@ -372,7 +372,7 @@ def save_graph(fId, graph):
         """
         Saves graphs to open with different solvers
         """
-        filename = './graphs_data/'+fId+'.dat'
+        filename = './data_graphs_raw/'+fId+'.dat'
         graph.write(filename, format='pickle')
 
 
@@ -381,7 +381,7 @@ def read_graph(fId):
         Returns a grahp object
         :fId: string indicating the file
         """
-        filename = 'graphs_data/'+fId+'.dat'
+        filename = 'data_graphs_raw/'+fId+'.dat'
         graph = igraph.read(filename, format='pickle')
         return graph
 

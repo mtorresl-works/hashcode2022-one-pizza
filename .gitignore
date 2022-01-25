@@ -9,3 +9,5 @@ artifacts
 venv/*
 max.json
 runs
+.directory
+**/.directory
