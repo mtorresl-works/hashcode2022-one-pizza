@@ -215,7 +215,7 @@ def read_anticlique(fId, nNodes):
     filename = './anticlique_data/'+fId+'-score_{:d}.npz'.format(nNodes)
     return np.load(filename)['graphVs']
 
-
+# DEPRECATED
 def print_best_score(fId):
         """
         Prints best score ever
@@ -293,6 +293,7 @@ def read_flags(fId='a', iC='random', nMC=100, nMCgbl=100, beta=0.01, deltaBeta=0
 
         return parser.parse_args()
 
+# DEPRECATED
 def gen_pizza_chain(fId, iC, NIng, clients):
     #TODO: write doc
         if iC == 'best':

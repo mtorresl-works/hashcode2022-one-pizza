@@ -34,6 +34,7 @@ Solves maximal independent set for a given graph using a greedy algorithm (deter
 ## Other:
 
 -`marina.py`: object definition and function tool box (calculate score, read and print files, graphs, etc.)
+
 -`package.sh`: TO BE WRITTEN (zips scripts for submission)
 
 
