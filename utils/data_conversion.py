@@ -13,7 +13,7 @@ inputFiles = {'a': "./data_input/a_an_example.in",\
               'e': "./data_input/e_elaborate.in"}
 
 
-def read_flags(fId='a', iC='random', nMC=100, nMCgbl=100, beta=0.01, deltaBeta=0.005, nFlips=5, N1=5, N2=2, is_graph=True, NV=0):
+def read_flags(fId='a', iC='random', nMC=100, nMCgbl=100, beta=0.01, deltaBeta=0.005, nFlips=5, N1=5, N2=2, is_pizza=False, NV=0):
     """Reads flags for all solvers"""
 
     parser = argparse.ArgumentParser()
@@ -36,7 +36,7 @@ def read_flags(fId='a', iC='random', nMC=100, nMCgbl=100, beta=0.01, deltaBeta=0
 
     """ SUBMISSION GENERATOR """
 
-    parser.add_argument('-is_graph', help="(SUMBISSION GEN) Is solution to be read from an anticlique_graph or from a pizza ? (bool). Default = "+str(is_graph), type=bool, default=is_graph)
+    parser.add_argument('-is_pizza', help="(SUMBISSION GEN) Is solution to be read from an anticlique_graph or from a pizza ? (bool). Default = "+str(is_pizza), type=bool, default=is_pizza)
 
     parser.add_argument('-NV', help="(# of vertices of the graph to be read. Default = "+str(NV), type=int, default=NV)
 

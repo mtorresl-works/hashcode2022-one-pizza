@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
     ns = data_conversion.create_client_ns(fId)
 
-    if flags.is_graph:
+    if flags.is_pizza:
         NVertex = flags.NV
         graph = read_write.read_graph(fId, True, NVertex)
 
