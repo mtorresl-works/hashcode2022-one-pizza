@@ -1,22 +1,18 @@
 import argparse
-import data_conversion
+import utils.read_write as read_write
+import utils.data_conversion as data_conversion
 
-
-def read_flags(fId):
-
-        parser = argparse.ArgumentParser()
-
-        parser.add_argument('-fId', help="Input file identifier (str). Default = "+fId, type=str, default=fId)
-
-        return parser.parse_args()
 
 
 if __name__ == '__main__':
 
-    flags = read_flags(fId='a')
+    flags = data_conversion.read_flags()
 
-    inp = data_conversion.get_in_file_content(data_conversion.inputFiles[flags.fId])
-    ns = data_conversion.parse(inp)
+    fId = flags.fId
+    ns = data_conversion.create_client_ns(fId)
+
+    graph = read_write.read_graph(fId, folder)
+
     score, pizzaChain = data_conversion.read_best(flags.fId)
     print("File "+flags.fId)
     print("Submission score: {:d}".format(score))
