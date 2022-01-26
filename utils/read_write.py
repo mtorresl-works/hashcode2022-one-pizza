@@ -1,5 +1,6 @@
 import numpy as np
 import igraph as ig
+from os import listdir, getcwd
 
 
 def input_file_to_string(filename):
@@ -22,7 +23,7 @@ def string_to_submission_file(oStr, fId, score):
     :param fId: string indicating the (input example) file ID
     :param score: integer storing best score
     '''
-    filename = './data_submissions/'+fId+'-score_{:d}.out'.format(score)
+    filename = './data_submissions/'+fId+'-submission_{:d}.out'.format(score)
     with open(filename, 'w') as f:
         f.write(oStr)
     f.close()
@@ -35,13 +36,8 @@ def read_pizza(fId, method):
     :return: score, pizzaChain
     """
     filename = './data_submissions/pizzas/'+fId+'-pizzaChain-'+method+'.npz'
-    try:
-        with np.load(filename) as data:
-            return int(data['score']), data['pizzaChain']
-    except:
-        print("Error: couldn't open "+filename)
-        print("Best score set to 0")
-        return 0, None
+    with np.load(filename) as data:
+        return int(data['score']), data['pizzaChain']
 
 def export_pizza(fId, score, method, pizzaChain):
     """
@@ -52,9 +48,14 @@ def export_pizza(fId, score, method, pizzaChain):
     :param pizzaChain: a binary array (0s and 1s) indicating the presence or absence of an ingredient in the solution
     """
     filename = './data_submissions/pizzas/'+fId+'-pizzaChain-'+method+'.npz'
-    np.savez(filename, score=np.array(score), pizzaChain=pizzaChain)
+    try:
+        existentScore, pizzaDummy = read_pizza(fId, method)
+        if existentScore < score:
+            np.savez(filename, score=np.array(score), pizzaChain=pizzaChain)
+    except:
+        np.savez(filename, score=np.array(score), pizzaChain=pizzaChain)
 
-def read_graph(fId, anticlique, NVertex):
+def read_graph(fId, anticlique, NVertex=0):
     """
     Reads a binary file to a graph object
     :param fId: string indicating the file
@@ -63,9 +64,18 @@ def read_graph(fId, anticlique, NVertex):
     :return: a graph object
     """
     if anticlique:
-        filename = './data_antigraphs/'+fId+'-anticlique-Nv_'+str(NVertex)+'.dat'
+        if NVertex:
+            filename = './data_antigraphs/'+fId+'-anticlique-Nv_'+str(NVertex)+'.dat'
+        else:
+            fileList = listdir('./data_antigraphs/')
+            fileListById = [x for x in fileList if fId + "-" in x]
+            availableScores = [int(fn.split("_")[1]) for fn in [fp.split(".")[0] for fp in fileListById]]
+            bestScore = max(availableScores)
+            filename = './data_antigraphs/'+fId+'-anticlique-Nv_'+str(bestScore)+'.dat'
     else:
-        filename = './data_graphs_raw/'+fId+'-Nv_'+str(NVertex)+'.dat'
+        fileList = listdir('./data_graphs_raw/')
+        filename = './data_graphs_raw/' + [x for x in fileList if fId+"-" in x][0]
+        # filename = './data_graphs_raw/'+fId+'-Nv_'+str(NVertex)+'.dat'
 
     graph = ig.read(filename, format='pickle')
     return graph

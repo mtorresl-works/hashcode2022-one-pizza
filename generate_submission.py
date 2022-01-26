@@ -20,6 +20,7 @@ if __name__ == '__main__':
         pizzaChain = data_conversion.graph_to_pizza(graph, ns.NIng)
 
         score = scorer.score_from_pizza(ns.clients, pizzaChain)
+        NVertex = scorer.score_from_graph(graph)
 
         read_write.export_pizza(fId, score,'or', pizzaChain)
 

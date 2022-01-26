@@ -18,7 +18,10 @@ if __name__ == '__main__':
     ns = data_conversion.create_client_ns(flags.fId)
 
     ### GRAPH DEFINITION
-    g = data_conversion.clients_to_graph(ns.clients)
+    try:
+        g = read_write.read_graph(flags.fId, False)
+    except:
+        g = data_conversion.clients_to_graph(ns.clients)
     edges = g.get_edgelist()
     numVertex = ns.C
 
@@ -40,11 +43,10 @@ if __name__ == '__main__':
     # Solve
     status = solver.Solve()
 
-    #TODO: fix solution generation, something is wrong !
     # Print solution.
     gsolved = g.copy()
-    mis = [g.vs[i] for i in range(numVertex) if x[i].solution_value() > 0.5]
-    gsolved.delete_vertices(mis)
+    anti_mis = [g.vs[i] for i in range(numVertex) if x[i].solution_value() < 0.5]
+    gsolved.delete_vertices(anti_mis)
 
 
     pizzaChain = data_conversion.graph_to_pizza(gsolved, ns.NIng)
