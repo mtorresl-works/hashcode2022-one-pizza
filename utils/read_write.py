@@ -56,11 +56,10 @@ def export_pizza(fId, score, method, pizzaChain):
 
 def read_graph(fId, anticlique, NVertex):
     """
-    Reads a binary file to a grahp object
+    Reads a binary file to a graph object
     :param fId: string indicating the file
-    :anticlique: boolean, are vertex disconnected or not?
-    :NVertex: # of vertices, in graph name
-    data_graphs_raw or data_antigraphs
+    :param anticlique: boolean, are vertex disconnected or not?
+    :param NVertex: # of vertices, in graph name
     :return: a graph object
     """
     if anticlique:
@@ -74,12 +73,11 @@ def read_graph(fId, anticlique, NVertex):
 def export_graph(fId, graph, anticlique):
     """
     Prints a graph object to a binary file
-    :fId: string indicating the file
-    :graph: a graph object
-    :anticlique: boolean, are vertex disconnected or not?
+    :param fId: string indicating the file
+    :param graph: a graph object
+    :param anticlique: boolean, are vertex disconnected or not?
     """
-    NVertex = len(graph.vs
-    )
+    NVertex = len(graph.vs)
     if anticlique:
         filename = './data_antigraphs/'+fId+'-anticlique-Nv_'+str(NVertex)+'.dat'
     else:
@@ -88,11 +86,3 @@ def export_graph(fId, graph, anticlique):
     graph.write(filename, format='pickle')
 
 
-def export_graph_raw(fId, graph):
-    """
-    Prints a graph object to a binary file
-    :fId: string indicating the file
-    :param graph: a graph object
-    """
-    filename = './data_graphs_raw/'+fId+'.dat'
-    graph.write(filename, format='pickle')

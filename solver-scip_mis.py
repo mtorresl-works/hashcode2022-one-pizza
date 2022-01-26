@@ -7,6 +7,7 @@ from ortools.linear_solver import pywraplp
 
 import utils.data_conversion as data_conversion
 import utils.scorer as scorer
+import utils.read_write as read_write
 
 if __name__ == '__main__':
 
@@ -39,6 +40,7 @@ if __name__ == '__main__':
     # Solve
     status = solver.Solve()
 
+    #TODO: fix solution generation, something is wrong !
     # Print solution.
     gsolved = g.copy()
     mis = [g.vs[i] for i in range(numVertex) if x[i].solution_value() > 0.5]
@@ -47,6 +49,7 @@ if __name__ == '__main__':
 
     pizzaChain = data_conversion.graph_to_pizza(gsolved, ns.NIng)
 
-    score = scorer.score_from_pizza(ns.clients, pizzaChain)
-    data_conversion.export_graph(flags.fId, score, pizzaChain)
+    score = scorer.score_from_graph(gsolved)
+    read_write.export_graph(flags.fId, gsolved, True)
+    read_write.export_pizza(flags.fId, score, "or", pizzaChain)
     print("Final score: ", score)
