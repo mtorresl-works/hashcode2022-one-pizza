@@ -6,7 +6,8 @@ import igraph as ig
 from ortools.linear_solver import pywraplp
 from ortools.sat.python import cp_model
 
-import marina
+import utils.data_conversion as data_conversion
+import utils.read_write as read_write
 
 class VarArrayAndObjectiveSolutionPrinter(cp_model.CpSolverSolutionCallback):
   """Print intermediate solutions."""
@@ -30,12 +31,16 @@ if __name__ == '__main__':
 
     start_time = time.time()
 
-    flags = marina.read_flags()
+    flags = data_conversion.read_flags()
+    fId = flags.fId
 
     ### GRAPH DEFINITION
-    g = marina.read_graph(flags.fId)
+    g = read_write.read_graph(fId, anticlique=False, NVertex = int(flags.NV))
+
     edges = g.get_edgelist()
     numVertex = len(g.vs)
+    if not numVertex == flags.NV:
+        print("Warning:Read graph does not contain the specified number of vertices...")
 
     ### SOLVER
     model = cp_model.CpModel()
@@ -61,13 +66,11 @@ if __name__ == '__main__':
     # Print solution.
     #if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
 
-    anticlique = [i for i in range(numVertex) if solver.BooleanValue(x[i])]
-    marina.save_anticlique(flags.fId, anticlique)
+    #vertices not in anticlique
+    anticliqueComplement = [i for i in range(numVertex) if not solver.BooleanValue(x[i])]
 
-    mis = [g.vs[i]["client_info"] for i in range(numVertex) if solver.BooleanValue(x[i])]
+    g.delete_vertices(anticliqueComplement)
+    read_write.export_graph(fId, g, anticlique=True)
 
-    # pizzaChain = marina.optimal_pizza_chain(mis, ns.NIng)
-    #
-    # score = marina.calc_score(ns.clients, pizzaChain)
-    # marina.save_ortools(flags.fId, score, pizzaChain)
-    print("Final score: ", len(anticlique))
+    print("Vertices in anticlique: ", len(g.vs))
+    print("Estimation biggest anticlique: ", int(solver.BestObjectiveBound()))
