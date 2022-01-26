@@ -54,21 +54,24 @@ def export_pizza(fId, score, method, pizzaChain):
     filename = './data_submissions/pizzas/'+fId+'-pizzaChain-'+method+'.npz'
     np.savez(filename, score=np.array(score), pizzaChain=pizzaChain)
 
-def read_graph(fId):
+def read_graph(fId, folder):
     """
     Reads a binary file to a grahp object
     :param fId: string indicating the file
+    :folder: data_graphs_raw or data_antigraphs
     :return: a graph object
+
     """
-    filename = 'data_graphs_raw/'+fId+'.dat'
+    filename = './'+folder+'/'+fId+'.dat'
     graph = ig.read(filename, format='pickle')
     return graph
 
-def export_graph(fId, graph):
+def export_graph(fId, graph, folder):
     """
     Prints a graph object to a binary file
     :fId: string indicating the file
+    :folder: data_graphs_raw or data_antigraphs
     :param graph: a graph object
     """
-    filename = './data_graphs_raw/'+fId+'.dat'
+    filename = './'+folder+'/'+fId+'.dat'
     graph.write(filename, format='pickle')
