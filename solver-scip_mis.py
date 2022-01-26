@@ -6,6 +6,7 @@ import igraph as ig
 from ortools.linear_solver import pywraplp
 
 import utils.data_conversion as data_conversion
+import utils.scorer as scorer
 
 if __name__ == '__main__':
 
@@ -39,12 +40,13 @@ if __name__ == '__main__':
     status = solver.Solve()
 
     # Print solution.
-    mis = [g.vs[i]["client_info"] for i in range(numVertex) if x[i].solution_value() > 0.5]
     gsolved = g.copy()
+    mis = [g.vs[i] for i in range(numVertex) if x[i].solution_value() > 0.5]
+    gsolved.delete_vertices(mis)
 
 
-    pizzaChain = data_conversion.optimal_pizza_chain(mis, ns.NIng)
+    pizzaChain = data_conversion.graph_to_pizza(gsolved, ns.NIng)
 
-    score = data_conversion.calc_score(ns.clients, pizzaChain)
-    data_conversion.save_ortools(flags.fId, score, pizzaChain)
+    score = scorer.score_from_pizza(ns.clients, pizzaChain)
+    data_conversion.export_graph(flags.fId, score, pizzaChain)
     print("Final score: ", score)

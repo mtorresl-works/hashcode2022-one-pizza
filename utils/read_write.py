@@ -86,3 +86,13 @@ def export_graph(fId, graph, anticlique):
         filename = './data_graphs_raw/'+fId+'-Nv_'+str(NVertex)+'.dat'
 
     graph.write(filename, format='pickle')
+
+
+def export_graph_raw(fId, graph):
+    """
+    Prints a graph object to a binary file
+    :fId: string indicating the file
+    :param graph: a graph object
+    """
+    filename = './data_graphs_raw/'+fId+'.dat'
+    graph.write(filename, format='pickle')
