@@ -4,7 +4,6 @@ import utils.data_conversion as data_conversion
 
 if __name__ == '__main__':
 
-    folder = 'data_graphs_raw'
     flags = data_conversion.read_flags()
 
     fId = flags.fId
@@ -14,8 +13,9 @@ if __name__ == '__main__':
     g = data_conversion.clients_to_graph(ns.clients)
     print("Generated graph: ")
     ig.summary(g)
-    read_write.export_graph(fId, g, folder)
-    gg = read_write.read_graph(fId, folder)
+
+    read_write.export_graph(fId, g, anticlique=False)
+    gg = read_write.read_graph(fId, anticlique=False, NVertex = len(g.vs))
     print("Stored graph: ")
     ig.summary(gg)
 

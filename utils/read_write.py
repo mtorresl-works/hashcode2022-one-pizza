@@ -54,24 +54,35 @@ def export_pizza(fId, score, method, pizzaChain):
     filename = './data_submissions/pizzas/'+fId+'-pizzaChain-'+method+'.npz'
     np.savez(filename, score=np.array(score), pizzaChain=pizzaChain)
 
-def read_graph(fId, folder):
+def read_graph(fId, anticlique, NVertex):
     """
     Reads a binary file to a grahp object
     :param fId: string indicating the file
-    :folder: data_graphs_raw or data_antigraphs
+    :anticlique: boolean, are vertex disconnected or not?
+    :NVertex: # of vertices, in graph name
+    data_graphs_raw or data_antigraphs
     :return: a graph object
-
     """
-    filename = './'+folder+'/'+fId+'.dat'
+    if anticlique:
+        filename = './data_antigraphs/'+fId+'-anticlique-Nv_'+str(NVertex)+'.dat'
+    else:
+        filename = './data_graphs_raw/'+fId+'-Nv_'+str(NVertex)+'.dat'
+
     graph = ig.read(filename, format='pickle')
     return graph
 
-def export_graph(fId, graph, folder):
+def export_graph(fId, graph, anticlique):
     """
     Prints a graph object to a binary file
     :fId: string indicating the file
-    :folder: data_graphs_raw or data_antigraphs
-    :param graph: a graph object
+    :graph: a graph object
+    :anticlique: boolean, are vertex disconnected or not?
     """
-    filename = './'+folder+'/'+fId+'.dat'
+    NVertex = len(graph.vs
+    )
+    if anticlique:
+        filename = './data_antigraphs/'+fId+'-anticlique-Nv_'+str(NVertex)+'.dat'
+    else:
+        filename = './data_graphs_raw/'+fId+'-Nv_'+str(NVertex)+'.dat'
+
     graph.write(filename, format='pickle')
