@@ -1,8 +1,11 @@
 import numpy as np
 from math import exp, ceil
 import time
-import data_conversion
 from copy import copy
+
+import utils.data_conversion as data_conversion
+import utils.read_write as read_write
+import utils.scorer as scorer
 
 
 """
@@ -18,33 +21,15 @@ decay = 10
 
 def gen_pop_init(NIng, initial_conditions=[]):
     if not initial_conditions.size == 0:
-        return np.vstack(initial_conditions for i in range(flags.N1))
+        return np.vstack([initial_conditions]+list(np.random.randint(2, size=(flags.N1-1, NIng))))
     else:
         return np.random.randint(2, size=(flags.N1, NIng))
-
-
-# function for implementing the single-point crossover
-def crossover(l, q, NIng):
-    a, b = l.copy(), q.copy()
-    # generating the random number to perform crossover
-    k = np.random.randint(NIng)
-    # interchanging the genes
-    a[k:], b[k:] = q[k:].copy(), l[k:].copy()
-    return a, b
 
 
 def mutate(popSurvivals, scores, mu, NIng, N1, N2):
     """
     N1 number of parents
     N2 number of children per parent"""
-    # weights = scores/np.sum(scores)
-    # #Choosing the parents
-    # random_parents = np.random.choice(range(N1), N1*N2, p=weights)
-    #
-    # #Crossover
-    # children = np.zeros((N1*N2, NIng))
-    # for i in range(N1*N2-1):
-    #     children[i], children[i+1] = crossover(popSurvivals[random_parents[i]], popSurvivals[random_parents[i+1]], NIng)
     children = np.tile(popSurvivals, (N2,1)) #N2 copies along vertical axis
 
     #Mutate the children
@@ -61,7 +46,7 @@ def filter_by_score(scoresN1, population, clients, N1):
     The first N1 elements in population are the parents whose score is known (scoresN1)"""
     scores = scoresN1
     for pizzaChain in population[N1:]:
-        s = data_conversion.calc_score(clients, pizzaChain)
+        s = scorer.score_from_pizza(clients, pizzaChain)
         scores.append(s)
 
     scores = np.array(scores)  # To be able to use arg sort
@@ -74,21 +59,20 @@ def filter_by_score(scoresN1, population, clients, N1):
 if __name__ == '__main__':
 
     flags = data_conversion.read_flags()
+    ns = data_conversion.create_client_ns(flags.fId)
 
-    inp = data_conversion.get_in_file_content(data_conversion.inputFiles[flags.fId])
-    ns = data_conversion.parse(inp)
+    try:
+        scoreBest, pizzaChainBest = read_write.read_pizza(flags.fId, "mc")
+        print('Best score so far: ', scoreBest)
+    except:
+        pizzaChainBest = np.array([])
 
-    score, scoreBest, pizzaChain = data_conversion.gen_pizza_chain(flags.fId, flags.iC, ns.NIng, ns.clients)
-
-    print('Best score so far: ', scoreBest)
-
-    if flags.iC == 'random':
-        pizzaChain = np.array([])
-    population = gen_pop_init(ns.NIng, initial_conditions=pizzaChain)
+    # pizzaChainBest = np.array([]) # Use this if you want N1 different random individuals, instead of N1 pizzaChain clones
+    population = gen_pop_init(ns.NIng, initial_conditions=pizzaChainBest)
 
     scoresN1 = []
     for pizzaChain in population:
-        s = data_conversion.calc_score(ns.clients, pizzaChain)
+        s = scorer.score_from_pizza(ns.clients, pizzaChain)
         scoresN1.append(s)
     scoresN1 = np.array(scoresN1)  # To be able to use arg sort
     idSorted = np.argsort(-scoresN1)  # sort idx in ascending ording
@@ -98,31 +82,28 @@ if __name__ == '__main__':
     counter = 0
     generation = 0
     start_time = time.time()
-    while True:
-        print("---Generation:" + str(generation))
-        mu = ceil(ns.NIng * initialMutRatio * exp(-generation / decay))
-        populationAugmented = mutate(population, scoresN1, mu, ns.NIng, flags.N1, flags.N2)
-        population, scores = filter_by_score(scoresN1, populationAugmented, ns.clients, flags.N1)
+    try:
+        while True:
+            print("---Generation:" + str(generation))
+            mu = ceil(ns.NIng * initialMutRatio * exp(-generation / decay))
+            populationAugmented = mutate(population, scoresN1, mu, ns.NIng, flags.N1, flags.N2)
+            population, scores = filter_by_score(scoresN1, populationAugmented, ns.clients, flags.N1)
 
-        if scores[0] > scoreBest:
-            print("Best hit")
-            scoreBest, pizzaChainBest = data_conversion.read_best(flags.fId)
-            if scores[0] > scoreBest:
-                print("BEST HIT EVER: {:d}".format(scores[0]))
-                scoreBest, pizzaChainBest = scores[0], copy(population[0])
-                data_conversion.save_best(flags.fId, scoreBest, pizzaChainBest)
+            read_write.export_pizza(flags.fId, scores[0], "mc", copy(population[0]))
 
-        print("Max score: {:d} ({:.3f})".format(scores[0], scores[0]/ns.C))
-        if scoresN1[0] == scores[0]:
-            counter += 1
-        else:
-            counter = 0
+            print("Max score: {:d} ({:.3f})".format(scores[0], scores[0]/ns.C))
+            if scoresN1[0] == scores[0]:
+                counter += 1
+            else:
+                counter = 0
 
-        # if counter == NRepeats:
-        #     break
+            # if counter == NRepeats:
+            #     break
 
-        scoresN1 = scores
-        generation += 1
-        print("Execution time:" + str(time.time() - start_time))
+            scoresN1 = scores
+            generation += 1
+            print("Execution time:" + str(time.time() - start_time))
 
-    print("Final score:" + str(scores[0] / ns.C))
+    except KeyboardInterrupt:
+        print("Final score:" + str(scores[0] / ns.C))
+        pass

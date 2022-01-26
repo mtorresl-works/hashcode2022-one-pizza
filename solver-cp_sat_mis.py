@@ -6,7 +6,7 @@ import igraph as ig
 from ortools.linear_solver import pywraplp
 from ortools.sat.python import cp_model
 
-import data_conversion
+import marina
 
 class VarArrayAndObjectiveSolutionPrinter(cp_model.CpSolverSolutionCallback):
   """Print intermediate solutions."""
@@ -30,10 +30,10 @@ if __name__ == '__main__':
 
     start_time = time.time()
 
-    flags = data_conversion.read_flags()
+    flags = marina.read_flags()
 
     ### GRAPH DEFINITION
-    g = data_conversion.read_graph(flags.fId)
+    g = marina.read_graph(flags.fId)
     edges = g.get_edgelist()
     numVertex = len(g.vs)
 
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     #if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
 
     anticlique = [i for i in range(numVertex) if solver.BooleanValue(x[i])]
-    data_conversion.save_anticlique(flags.fId, anticlique)
+    marina.save_anticlique(flags.fId, anticlique)
 
     mis = [g.vs[i]["client_info"] for i in range(numVertex) if solver.BooleanValue(x[i])]
 
@@ -70,4 +70,4 @@ if __name__ == '__main__':
     #
     # score = marina.calc_score(ns.clients, pizzaChain)
     # marina.save_ortools(flags.fId, score, pizzaChain)
-    print("Final score: ", score)
+    print("Final score: ", len(anticlique))

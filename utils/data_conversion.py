@@ -21,7 +21,6 @@ def read_flags(fId='a', iC='random', nMC=100, nMCgbl=100, beta=0.01, deltaBeta=0
     """ ALL SOLVERS """
 
     parser.add_argument('-fId', help="Input file identifier (str). Default = "+fId, type=str, default=fId)
-    parser.add_argument('-iC', help="Initial configuration (str). 'random', 'best' or 'greedy'. Default = "+iC, type=str, default=iC)
 
     """ SA SOLVER """
 

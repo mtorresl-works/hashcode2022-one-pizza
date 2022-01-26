@@ -51,6 +51,7 @@ def export_pizza(fId, score, method, pizzaChain):
     try:
         existentScore, pizzaDummy = read_pizza(fId, method)
         if existentScore < score:
+            print("Best "+method+" hit")
             np.savez(filename, score=np.array(score), pizzaChain=pizzaChain)
     except:
         np.savez(filename, score=np.array(score), pizzaChain=pizzaChain)
@@ -60,7 +61,7 @@ def read_graph(fId, anticlique, NVertex=0):
     Reads a binary file to a graph object
     :param fId: string indicating the file
     :param anticlique: boolean, are vertex disconnected or not?
-    :param NVertex: # of vertices, in graph name
+    :param NVertex: # of vertices, in graph name. If not indicated, looks for the max available value.
     :return: a graph object
     """
     if anticlique:
