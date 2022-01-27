@@ -1,9 +1,4 @@
-import argparse
 import time
-import numpy as np
-
-import igraph as ig
-from ortools.linear_solver import pywraplp
 from ortools.sat.python import cp_model
 
 import utils.data_conversion as data_conversion
