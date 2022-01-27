@@ -29,11 +29,15 @@ if __name__ == '__main__':
     flags = data_conversion.read_flags()
     fId = flags.fId
 
-    ### GRAPH DEFINITION
-    g = read_write.read_graph(fId, anticlique=False, NVertex = int(flags.NV))
+    ns = data_conversion.create_client_ns(fId)
 
+    ### GRAPH DEFINITION
+    try:
+        g = read_write.read_graph(fId, False)
+    except:
+        g = data_conversion.clients_to_graph(ns.clients)
     edges = g.get_edgelist()
-    numVertex = len(g.vs)
+    numVertex = ns.C
     if not numVertex == flags.NV:
         print("Warning:Read graph does not contain the specified number of vertices...")
 
@@ -53,7 +57,7 @@ if __name__ == '__main__':
     # Solve
     solver = cp_model.CpSolver()
     solution_printer = VarArrayAndObjectiveSolutionPrinter()
-    status = solver.Solve(model,solution_printer)
+    status = solver.Solve(model, solution_printer)
 
     print('Status = %s' % solver.StatusName(status))
     print('Number of solutions found: {:d}'.format(solution_printer.solution_count()))

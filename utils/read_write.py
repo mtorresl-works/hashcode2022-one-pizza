@@ -75,8 +75,8 @@ def read_graph(fId, anticlique, NVertex=0):
             filename = './data_antigraphs/'+fId+'-anticlique-Nv_'+str(bestScore)+'.dat'
     else:
         fileList = listdir('./data_graphs_raw/')
-        #filename = './data_graphs_raw/' + [x for x in fileList if fId+"-" in x][0]
-        filename = './data_graphs_raw/'+fId+'-Nv_'+str(NVertex)+'.dat'
+        filename = './data_graphs_raw/' + [x for x in fileList if fId+"-" in x][0]
+        # filename = './data_graphs_raw/'+fId+'-Nv_'+str(NVertex)+'.dat'
 
     graph = ig.read(filename, format='pickle')
     return graph
