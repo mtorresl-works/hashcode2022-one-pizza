@@ -32,14 +32,16 @@ if __name__ == '__main__':
     ns = data_conversion.create_client_ns(fId)
 
     ### GRAPH DEFINITION
-    try:
-        g = read_write.read_graph(fId, False)
-    except:
-        g = data_conversion.clients_to_graph(ns.clients)
+    # try:
+    #     g = read_write.read_graph(fId, anticlique=False)
+    # except:
+    #     g = data_conversion.clients_to_graph(ns.clients)
+    g = read_write.read_graph(fId, anticlique=False, NVertex=flags.NV)
+
     edges = g.get_edgelist()
-    numVertex = ns.C
-    if not numVertex == flags.NV:
-        print("Warning:Read graph does not contain the specified number of vertices...")
+    numVertex = len(g.vs)
+    # if not numVertex == flags.NV:
+    #     print("Warning:Read graph does not contain the specified number of vertices...")
 
     ### SOLVER
     model = cp_model.CpModel()

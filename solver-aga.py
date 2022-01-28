@@ -62,7 +62,7 @@ if __name__ == '__main__':
     ns = data_conversion.create_client_ns(flags.fId)
 
     try:
-        scoreBest, pizzaChainBest = read_write.read_pizza(flags.fId, "mc")
+        scoreBest, pizzaChainBest = read_write.read_pizza(flags.fId, "or")
         print('Best score so far: ', scoreBest)
     except:
         pizzaChainBest = np.array([])
